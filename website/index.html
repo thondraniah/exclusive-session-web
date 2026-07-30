@@ -129,6 +129,23 @@
       transition: color 0.3s;
     }
     .nav-links a:hover { color: var(--gold-lt); }
+    .nav-vip-btn {
+      background: linear-gradient(135deg,#9A7B2E 0%,#D4AF37 30%,#F5D77A 50%,#D4AF37 70%,#9A7B2E 100%);
+      color: #000 !important;
+      padding: 0.5rem 1.2rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      box-shadow: 0 0 15px rgba(212,175,55,0.4);
+      transition: all 0.3s;
+    }
+    .nav-vip-btn:hover {
+      box-shadow: 0 0 25px rgba(212,175,55,0.7);
+      transform: translateY(-1px);
+      color: #000 !important;
+    }
 
     /* Hamburger */
     .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
@@ -437,6 +454,7 @@
       <li><a href="#ubicaciones">Ubicación</a></li>
       <li><a href="#tienda">Tienda</a></li>
       <li><a href="#contacto">Contacto</a></li>
+      <li><a href="https://members.exclusive-session.com" target="_blank" class="nav-vip-btn">👑 Miembros</a></li>
     </ul>
     <div class="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('open')">
       <span></span><span></span><span></span>
@@ -451,6 +469,7 @@
     <a href="#ubicaciones" onclick="this.parentElement.classList.remove('open')">Ubicación</a>
     <a href="#tienda" onclick="this.parentElement.classList.remove('open')">Tienda</a>
     <a href="#contacto" onclick="this.parentElement.classList.remove('open')">Contacto</a>
+    <a href="https://members.exclusive-session.com" target="_blank" onclick="this.parentElement.classList.remove('open')">👑 Miembros VIP</a>
   </div>
 
   <!-- HERO -->
@@ -757,13 +776,13 @@
     const GALLERY = {
       tattoo: { total: 132, start: 7, prefix: 'tattoo' },
       barber: { total: 39, start: 6, prefix: 'barber' },
-      manicure: { total: 17, start: 0, prefix: 'manicure' }
+      manicure: { total: 16, start: 0, prefix: 'manicure' }
     };
 
     // Manicure uses mixed files
     const MANICURE_FILES = [
       'tattoo1.jpg','tattoo2.jpg','tattoo3.jpg','tattoo4.jpg','tattoo5.jpg','tattoo6.jpg',
-      'barber1.jpg','barber2.jpg','barber3.jpg','barber4.jpg','barber5.jpg',
+      'barber2.jpg','barber3.jpg','barber4.jpg','barber5.jpg',
       'manicure1.jpg','manicure2.jpg','manicure3.jpg','manicure4.jpg','manicure5.jpg','manicure6.jpg'
     ];
 

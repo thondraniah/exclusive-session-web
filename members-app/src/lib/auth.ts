@@ -32,5 +32,4 @@ export async function getCurrentUser() {
 }
 
 // Contraseñas del admin
-export const ADMIN_PASS = process.env.ADMIN_PASS || 'P4lant1R'
-export const ADMIN_SECOND_PASS = process.env.ADMIN_SECOND_PASS || 'Mordor777'
+export const ADMIN_PASS = process.env.ADMIN_PASS || 'P4lant1R777'

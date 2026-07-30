@@ -1,16 +1,11 @@
 // GET /api/admin/users — Listar usuarios (con verificación de admin)
 import { NextRequest, NextResponse } from 'next/server'
-import { ADMIN_PASS, ADMIN_SECOND_PASS } from '@/lib/auth'
+import { ADMIN_PASS } from '@/lib/auth'
 import prisma from '@/lib/db'
 
 function checkAdmin(req: NextRequest) {
   const pass = req.headers.get('x-admin-pass')
   return pass === ADMIN_PASS
-}
-
-function checkSecondPass(req: NextRequest) {
-  const pass = req.headers.get('x-second-pass')
-  return pass === ADMIN_SECOND_PASS
 }
 
 export async function GET(req: NextRequest) {
@@ -28,7 +23,6 @@ export async function POST(req: NextRequest) {
   if (!action) return NextResponse.json({ error: 'Acción requerida' }, { status: 400 })
 
   if (action === 'toggle_activo') {
-    if (!checkSecondPass(req)) return NextResponse.json({ error: 'Segunda contraseña requerida para esta acción' }, { status: 403 })
     const user = await prisma.user.findUnique({ where: { id: userId } })
     if (!user) return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
     await prisma.user.update({ where: { id: userId }, data: { activo: !user.activo } })
@@ -36,7 +30,6 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'delete') {
-    if (!checkSecondPass(req)) return NextResponse.json({ error: 'Segunda contraseña requerida para eliminar' }, { status: 403 })
     await prisma.user.delete({ where: { id: userId } })
     return NextResponse.json({ ok: true })
   }

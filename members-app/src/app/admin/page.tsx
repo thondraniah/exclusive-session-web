@@ -1,17 +1,14 @@
 'use client'
-// Panel de Administración — Solo accesible con Gandalf / P4lant1R
+// Panel de Administración — Solo accesible con Gandalf / P4lant1R777
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function AdminPage() {
   const router = useRouter()
-  const [authStep, setAuthStep] = useState<1 | 2 | 3>(1)
-  const [pass1, setPass1] = useState('')
-  const [pass2, setPass2] = useState('')
+  const [authStep, setAuthStep] = useState<1 | 2>(1)
+  const [pass, setPass] = useState('')
   const [authError, setAuthError] = useState('')
   const [tab, setTab] = useState('stats')
-  const [secondPassRequired, setSecondPassRequired] = useState(false)
-  const [pendingAction, setPendingAction] = useState<any>(null)
 
   const [stats, setStats] = useState<any>(null)
   const [users, setUsers] = useState<any[]>([])
@@ -21,10 +18,8 @@ export default function AdminPage() {
   const [newUser, setNewUser] = useState({ email: '', telefono: '', nombre: '', password: '' })
   const [newAppt, setNewAppt] = useState({ userId: '', servicio: 'tattoo', precio: '', fecha: '' })
   const [msg, setMsg] = useState<any>(null)
-  const [secondPassInput, setSecondPassInput] = useState('')
 
-  const ADMIN_PASS = 'P4lant1R'
-  const ADMIN_SECOND_PASS = 'Mordor777'
+  const ADMIN_PASS = 'P4lant1R777'
 
   async function loadStats() {
     const res = await fetch('/api/admin/stats', { headers: { 'x-admin-pass': ADMIN_PASS } })
@@ -47,19 +42,8 @@ export default function AdminPage() {
     setTransactions(d.transactions)
   }
 
-  function handleAction(action: string, data: any, needsSecond = false) {
-    if (needsSecond) {
-      setPendingAction({ action, data })
-      setSecondPassRequired(true)
-      setSecondPassInput('')
-    } else {
-      executeAction(action, data)
-    }
-  }
-
-  async function executeAction(action: string, data: any, secondPassOverride?: string) {
+  async function executeAction(action: string, data: any) {
     const headers: Record<string, string> = { 'Content-Type': 'application/json', 'x-admin-pass': ADMIN_PASS }
-    if (secondPassOverride) headers['x-second-pass'] = secondPassOverride
     const res = await fetch('/api/admin/users', {
       method: 'POST', headers,
       body: JSON.stringify({ action, ...data })
@@ -67,17 +51,7 @@ export default function AdminPage() {
     const d = await res.json()
     if (d.error) { setMsg({ type: 'error', text: d.error }); return }
     setMsg({ type: 'success', text: `Acción completada: ${action}` })
-    setSecondPassRequired(false)
-    setPendingAction(null)
     loadUsers()
-  }
-
-  function handleSecondPassSubmit() {
-    if (secondPassInput !== ADMIN_SECOND_PASS) {
-      setMsg({ type: 'error', text: 'Segunda contraseña incorrecta' })
-      return
-    }
-    executeAction(pendingAction.action, pendingAction.data, ADMIN_SECOND_PASS)
   }
 
   async function crearUsuario(e: React.FormEvent) {
@@ -113,40 +87,14 @@ export default function AdminPage() {
           {authError && <div className="alert alert-error">{authError}</div>}
           <form onSubmit={e => {
             e.preventDefault()
-            if (pass1 === ADMIN_PASS) { setAuthStep(2); setAuthError('') }
-            else { setAuthError('Contraseña incorrecta'); setPass1('') }
+            if (pass === ADMIN_PASS) { setAuthStep(2); setAuthError('') }
+            else { setAuthError('Contraseña incorrecta'); setPass('') }
           }}>
             <div className="form-group">
-              <label>🔐 Contraseña de acceso</label>
-              <input className="input" type="password" placeholder="••••••••" value={pass1} onChange={e => setPass1(e.target.value)} required autoFocus />
+              <label>🔐 Contraseña</label>
+              <input className="input" type="password" placeholder="••••••••" value={pass} onChange={e => setPass(e.target.value)} required autoFocus />
             </div>
-            <button type="submit" className="btn btn-danger" style={{ width: '100%' }}>Verificar</button>
-          </form>
-        </div>
-      </div>
-    )
-  }
-
-  if (authStep === 2) {
-    return (
-      <div className="login-page">
-        <div className="login-box card" style={{ border: '2px solid #e67e22' }}>
-          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <div style={{ fontSize: '3rem' }}>⚠️</div>
-            <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '1.5rem', color: '#e67e22', letterSpacing: '3px', marginTop: '0.5rem' }}>SEGUNDA CONTRASEÑA</div>
-            <div style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.5rem' }}>Acceso restringido — requiere doble verificación</div>
-          </div>
-          {authError && <div className="alert alert-error">{authError}</div>}
-          <form onSubmit={e => {
-            e.preventDefault()
-            if (pass2 === ADMIN_SECOND_PASS) { setAuthStep(3); setAuthError('') }
-            else { setAuthError('Contraseña incorrecta'); setPass2('') }
-          }}>
-            <div className="form-group">
-              <label>🔑 Segunda contraseña</label>
-              <input className="input" type="password" placeholder="••••••••" value={pass2} onChange={e => setPass2(e.target.value)} required autoFocus />
-            </div>
-            <button type="submit" className="btn btn-gold" style={{ width: '100%' }}>Acceder al Panel</button>
+            <button type="submit" className="btn btn-danger" style={{ width: '100%' }}>Acceder</button>
           </form>
         </div>
       </div>
@@ -170,26 +118,6 @@ export default function AdminPage() {
 
       <div style={{ padding: '2rem' }}>
         {msg && <div className={`alert alert-${msg.type}`} style={{ marginBottom: '1.5rem' }}>{msg.text}</div>}
-
-        {/* Second pass modal */}
-        {secondPassRequired && (
-          <div className="modal-overlay">
-            <div className="modal" style={{ border: '2px solid #c0392b' }}>
-              <div className="modal-title">⚠️ Confirmar Acción Sensible</div>
-              <p style={{ color: '#ccc', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-                Esta acción requiere la segunda contraseña de administrador (Mordor777).
-              </p>
-              <div className="form-group">
-                <label>🔑 Segunda contraseña</label>
-                <input className="input" type="password" placeholder="••••••••" value={secondPassInput} onChange={e => setSecondPassInput(e.target.value)} autoFocus />
-              </div>
-              <div className="modal-actions">
-                <button className="btn btn-outline" onClick={() => { setSecondPassRequired(false); setPendingAction(null) }}>Cancelar</button>
-                <button className="btn btn-danger" onClick={handleSecondPassSubmit}>Confirmar</button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* TABS */}
         <div className="tabs">
@@ -254,11 +182,11 @@ export default function AdminPage() {
                       </td>
                       <td>
                         <div className="actions">
-                          <button className="btn btn-outline btn-sm" onClick={() => handleAction('toggle_activo', { userId: u.id }, true)}
+                          <button className="btn btn-outline btn-sm" onClick={() => executeAction('toggle_activo', { userId: u.id })}
                             style={{ color: u.activo ? '#e74c3c' : '#2ecc71', borderColor: u.activo ? '#e74c3c' : '#2ecc71' }}>
                             {u.activo ? 'Desactivar' : 'Activar'}
                           </button>
-                          <button className="btn btn-danger btn-sm" onClick={() => handleAction('delete', { userId: u.id }, true)}
+                          <button className="btn btn-danger btn-sm" onClick={() => executeAction('delete', { userId: u.id })}
                             style={{ fontSize: '0.7rem' }}>
                             Eliminar
                           </button>

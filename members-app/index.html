@@ -403,8 +403,7 @@
 // DATA LAYER — localStorage
 // ═══════════════════════════════════════════════════════
 const DB_KEY = 'es_app_db_v2'
-const ADMIN_PASS = 'P4lant1R'
-const ADMIN_SECOND_PASS = 'Mordor777'
+const ADMIN_PASS = 'P4lant1R777'
 const ADMIN_WA = 'wa.me/16464882233'
 const WEB_URL = 'https://jlx78gbg9ptlf.space.minimax.io'
 
@@ -1382,9 +1381,6 @@ function handleNuevaCuota(e) {
 // ADMIN PANEL
 // ═══════════════════════════════════════════════════════
 let adminError = ''
-let secondPassRequired = false
-let pendingAdminAction = null
-let secondPassVal = ''
 
 function renderAdmin(root) {
   if (adminAuthStep === 1) {
@@ -1408,27 +1404,6 @@ function renderAdmin(root) {
     `
     return
   }
-  if (adminAuthStep === 2) {
-    root.innerHTML = `
-      <div class="login-screen animate">
-        <div class="login-logo-wrap">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#e67e22;letter-spacing:4px">⚠️ DOBLE VERIFICACIÓN</div>
-          <div style="color:var(--gray-lt);margin-top:0.3rem;font-size:0.85rem">Acceso restringido — segunda contraseña requerida</div>
-        </div>
-        <div class="login-box">
-          <div class="glass-card" style="padding:2.5rem;border:2px solid #e67e22">
-            ${adminError ? `<div class="alert alert-error">${adminError}</div>` : ''}
-            <form onsubmit="event.preventDefault();adminStep2()">
-              <div class="input-group"><label>🔑 Segunda contraseña</label><input class="input" id="ap2" type="password" placeholder="••••••••" required autofocus></div>
-              <button type="submit" class="btn btn-gold" style="width:100%">Acceder al Panel</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    `
-    return
-  }
-
   // Admin panel
   const db = initDB()
   const stats = {
@@ -1450,20 +1425,6 @@ function renderAdmin(root) {
 
     <div class="page-body">
       ${msg ? `<div class="alert alert-${msg.type}" style="margin-bottom:1.5rem">${msg.text}</div>` : ''}
-
-      ${secondPassRequired ? `
-        <div class="modal-overlay">
-          <div class="modal" style="border:2px solid #c0392b">
-            <div class="modal-title">⚠️ Confirmar Acción Sensible</div>
-            <p style="color:#ccc;margin-bottom:1.5rem;font-size:0.88rem">Esta acción requiere la segunda contraseña (Mordor777)</p>
-            <div class="input-group"><label>🔑 Segunda contraseña</label><input class="input" id="sp-val" type="password" placeholder="••••••••" autofocus value="${secondPassVal}"></div>
-            <div class="modal-actions">
-              <button class="btn btn-outline" onclick="secondPassRequired=false;pendingAdminAction=null;secondPassVal='';render()">Cancelar</button>
-              <button class="btn btn-danger" onclick="adminConfirmSecond()">Confirmar</button>
-            </div>
-          </div>
-        </div>
-      ` : ''}
 
       <div class="tab-bar">
         ${['stats','usuarios','reservas','transacciones','nuevo'].map(t => `
@@ -1527,7 +1488,7 @@ function renderAdmin(root) {
                       <button class="btn btn-sm btn-outline" onclick="adminAgregarSaldo('${u.id}')" title="Agregar saldo">+$</button>
                       <button class="btn btn-sm btn-outline" onclick="adminQuitarSaldo('${u.id}')" title="Quitar saldo">-$</button>
                       <button class="btn btn-sm btn-outline" onclick="adminRegalarGC('${u.id}')" title="Regalar GC">🎁</button>
-                      <button class="btn btn-sm ${u.activo?'btn-danger':'btn-gold'}" onclick="adminToggleActivo('${u.id}',${u.activo})" style="font-size:0.7rem">${u.activo?'Off':'On'}</button>
+                      <button class="btn btn-sm ${u.activo?'btn-danger':'btn-gold'}" onclick="adminToggleActivo('${u.id}')" style="font-size:0.7rem">${u.activo?'Off':'On'}</button>
                       <button class="btn btn-sm btn-danger" onclick="adminDeleteUser('${u.id}')" style="font-size:0.7rem">Del</button>
                     </div>
                   </td>
@@ -1629,38 +1590,17 @@ function adminStep1() {
   if (p === ADMIN_PASS) { adminAuthStep = 2; adminError = ''; render() }
   else { adminError = 'Contraseña incorrecta'; render() }
 }
-function adminStep2() {
-  const p = document.getElementById('ap2').value
-  if (p === ADMIN_SECOND_PASS) { adminAuthStep = 3; adminError = ''; render() }
-  else { adminError = 'Contraseña incorrecta'; render() }
-}
-function adminConfirmSecond() {
-  const v = document.getElementById('sp-val')?.value
-  if (v !== ADMIN_SECOND_PASS) { msg = { type: 'error', text: 'Segunda contraseña incorrecta' }; secondPassRequired = false; render(); return }
-  const db = initDB()
-  if (pendingAdminAction.type === 'toggle') {
-    const u = db.users.find(u => u.id === pendingAdminAction.id)
-    u.activo = !u.activo
-    msg = { type: 'success', text: `Usuario ${u.activo?'activado':'desactivado'}` }
-  } else if (pendingAdminAction.type === 'delete') {
-    db.users = db.users.filter(u => u.id !== pendingAdminAction.id)
-    msg = { type: 'success', text: 'Usuario eliminado permanentemente' }
-  }
-  saveDB(db)
-  secondPassRequired = false; pendingAdminAction = null; secondPassVal = ''
-  render()
-}
-function adminToggleActivo(id, current) {
-  if (!current) {
-    const db = initDB(); const u = db.users.find(u => u.id === id)
-    u.activo = true; saveDB(db)
-    msg = { type: 'success', text: 'Usuario activado' }; render()
-  } else {
-    pendingAdminAction = { type: 'toggle', id }; secondPassRequired = true; render()
-  }
+function adminToggleActivo(id) {
+  const db = initDB(); const u = db.users.find(u => u.id === id)
+  u.activo = !u.activo; saveDB(db)
+  msg = { type: 'success', text: u.activo ? 'Usuario activado' : 'Usuario desactivado' }; render()
 }
 function adminDeleteUser(id) {
-  pendingAdminAction = { type: 'delete', id }; secondPassRequired = true; render()
+  if (!confirm('¿Eliminar este usuario?')) return
+  const db = initDB(); db.users = db.users.filter(u => u.id !== id)
+  db.wallets = db.wallets.filter(w => w.userId !== id)
+  saveDB(db)
+  msg = { type: 'success', text: 'Usuario eliminado' }; render()
 }
 function adminAgregarSaldo(id) {
   const monto = parseFloat(prompt('¿Cuánto saldo agregas?'))

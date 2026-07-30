@@ -1,6 +1,6 @@
 // POST /api/admin/appointments — Crear / actualizar cita
 import { NextRequest, NextResponse } from 'next/server'
-import { ADMIN_PASS, ADMIN_SECOND_PASS } from '@/lib/auth'
+import { ADMIN_PASS } from '@/lib/auth'
 import prisma from '@/lib/db'
 
 export async function POST(req: NextRequest) {
