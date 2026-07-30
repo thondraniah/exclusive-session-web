@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 
 export default function AdminPage() {
   const router = useRouter()
-  const [authStep, setAuthStep] = useState<1 | 2>(1)
+  const [authStep, setAuthStep] = useState<1 | 2 | 3>(1)
   const [pass1, setPass1] = useState('')
   const [pass2, setPass2] = useState('')
   const [authError, setAuthError] = useState('')
