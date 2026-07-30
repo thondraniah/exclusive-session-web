@@ -1,0 +1,23 @@
+name = "exclusive-session-members"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Base de datos D1
+[[d1_databases]]
+binding = "DB"
+database_name = "exclusive-session-members"
+database_id = "REPLACE_WITH_DB_ID"
+
+# KV para sesiones
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "REPLACE_WITH_KV_ID"
+
+# Rutas custom
+routes = [
+  { pattern = "members.exclusive-session.com", zone_name = "exclusive-session.com" }
+]
+
+# Dominio
+vars = { ENVIRONMENT = "production" }
