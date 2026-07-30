@@ -1,4 +1,0 @@
-{
-  "buildCommand": "echo 'Static deploy - no build needed'",
-  "outputDirectory": "members-app"
-}
