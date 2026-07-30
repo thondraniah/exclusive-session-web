@@ -557,6 +557,7 @@ function render() {
   initParticles()
   const session = getSession()
   const root = document.getElementById('app-root')
+  if (artistAuthStep === 2) { renderArtist(root); return }
   if (!session) { renderLogin(root); return }
   if (session.rol === 'admin') { renderAdmin(root); return }
   renderApp(root)
@@ -592,8 +593,9 @@ function renderLogin(root) {
             </button>
           </form>
           <div class="gold-divider"></div>
-          <div style="text-align:center">
-            <a href="#" onclick="event.preventDefault();adminAuthStep=1;render()" style="color:var(--gray-lt);font-size:0.8rem">🔒 Acceso Administrador</a>
+          <div style="text-align:center;display:flex;flex-direction:column;gap:0.4rem">
+            <a href="#" onclick="event.preventDefault();artistAuthStep=1;render()" style="color:var(--gold);font-size:0.82rem;font-weight:600">🎨 Portal del Artista</a>
+            <a href="#" onclick="event.preventDefault();adminAuthStep=1;render()" style="color:var(--gray-lt);font-size:0.78rem">🔒 Admin</a>
           </div>
           <div class="alert alert-info" style="margin-top:1rem;font-size:0.78rem">
             Demo: <strong>nelson@exclusivesession.com</strong> / <strong>demo123</strong>
@@ -1378,6 +1380,178 @@ function handleNuevaCuota(e) {
 }
 
 // ═══════════════════════════════════════════════════════
+// ARTIST PORTAL
+// ═══════════════════════════════════════════════════════
+let artistAuthStep = 1
+let artistCode = ''
+let artistError = ''
+let artistTab = 'hoy'
+
+const ARTISTS = {
+  'NELSON':   { nombre: 'Nelson Tattoo',  especialidad: 'Tattoo',   color: '#D4AF37' },
+  'JAMES':    { nombre: 'James Barber',  especialidad: 'Barbería', color: '#0057D9' },
+  'JC':       { nombre: 'JC Barber',      especialidad: 'Barbería', color: '#1E90FF' },
+  'SHARITH':  { nombre: 'Sharith Nails',  especialidad: 'Manicure', color: '#FF69B4' },
+  'KEREN':    { nombre: 'Keren Nails',   especialidad: 'Manicure', color: '#FF1493' }
+}
+
+function artistLogin(code) {
+  const a = ARTISTS[code.toUpperCase()]
+  if (a) { artistCode = code.toUpperCase(); artistAuthStep = 2; artistError = ''; render() }
+  else { artistError = 'Código no válido'; artistAuthStep = 1; render() }
+}
+
+function renderArtist(root) {
+  const hoy = new Date().toISOString().split('T')[0]
+
+  if (artistAuthStep === 1) {
+    root.innerHTML = `
+      <div class="login-screen animate">
+        <div class="login-logo-wrap">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--gold);letter-spacing:4px">🎨 PORTAL DEL ARTISTA</div>
+          <div style="color:var(--gray-lt);margin-top:0.3rem">Exclusive Session — Team Access</div>
+        </div>
+        <div class="login-box">
+          <div class="glass-card" style="padding:2rem;border:2px solid var(--gold)">
+            ${artistError ? `<div class="alert alert-error">${artistError}</div>` : ''}
+            <p style="color:var(--gray-lt);font-size:0.82rem;text-align:center;margin-bottom:1.5rem">
+              Ingresa tu código de artista para ver tus citas
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem">
+              ${Object.entries(ARTISTS).map(([code, a]) => `
+                <button class="btn btn-outline" onclick="artistLogin('${code}')" style="font-size:0.75rem;padding:0.6rem">
+                  ${a.nombre}
+                </button>
+              `).join('')}
+            </div>
+            <form onsubmit="event.preventDefault();artistLogin(document.getElementById('ac').value)">
+              <div class="input-group"><label>Código</label><input class="input" id="ac" type="text" placeholder="NELSON / JAMES / JC / SHARITH / KEREN" style="text-transform:uppercase" required></div>
+              <button type="submit" class="btn btn-gold" style="width:100%">Entrar</button>
+            </form>
+          </div>
+          <div style="text-align:center;margin-top:1rem">
+            <a href="#" onclick="event.preventDefault();clearSession();render()" style="color:var(--gray-lt);font-size:0.8rem">← Volver al Login</a>
+          </div>
+        </div>
+      </div>
+    `
+    return
+  }
+
+  // Artist panel
+  const db = initDB()
+  const artist = ARTISTS[artistCode]
+  const hoyISO = new Date().toISOString().split('T')[0]
+
+  const misReservas = db.appointments.filter(a => a.artistCode === artistCode)
+  const hoyReservas = misReservas.filter(a => a.fecha.startsWith(hoyISO))
+  const proximasReservas = misReservas.filter(a => a.fecha >= hoyISO).sort((a, b) => a.fecha.localeCompare(b.fecha))
+  const historial = misReservas.filter(a => a.fecha < hoyISO || a.estado === 'completado').sort((a, b) => b.fecha.localeCompare(a.fecha))
+  const ganancias = misReservas.filter(a => a.estado === 'completado').reduce((s, a) => s + (a.precio || 0), 0)
+
+  root.innerHTML = `
+    <div class="admin-header" style="background:linear-gradient(135deg,#1a1a2e,${artist.color}22)">
+      <div class="admin-logo" style="color:${artist.color}">🎨 ${artist.nombre}</div>
+      <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap">
+        <span style="font-size:0.75rem;color:var(--gray-lt);background:rgba(255,255,255,0.05);padding:0.3rem 0.8rem;border-radius:20px">${artist.especialidad}</span>
+        <button class="btn btn-outline btn-sm" onclick="clearSession();render()" style="color:var(--gold)">Logout</button>
+      </div>
+    </div>
+
+    <div class="page-body">
+      <div style="margin-bottom:1.5rem">
+        <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="glass-card" style="padding:1.2rem;text-align:center">
+            <div class="stat-val" style="color:${artist.color}">${misReservas.length}</div>
+            <div class="stat-lbl">Total Citas</div>
+          </div>
+          <div class="glass-card" style="padding:1.2rem;text-align:center">
+            <div class="stat-val" style="color:#2ecc71">${hoyReservas.length}</div>
+            <div class="stat-lbl">Hoy</div>
+          </div>
+          <div class="glass-card" style="padding:1.2rem;text-align:center">
+            <div class="stat-val" style="color:var(--royal-lt)">${proximasReservas.length}</div>
+            <div class="stat-lbl">Próximas</div>
+          </div>
+          <div class="glass-card" style="padding:1.2rem;text-align:center">
+            <div class="stat-val" style="color:var(--gold)">$${ganancias.toFixed(0)}</div>
+            <div class="stat-lbl">Ganado</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        ${[['hoy','📅 Hoy'],['proximas','⏭ Próximas'],['historial','📋 Historial']].map(([t, label]) => `
+          <button class="tab-btn ${artistTab===t?'active':''}" onclick="artistTab='${t}';render()" style="--active-color:${artist.color}">${label}</button>
+        `).join('')}
+      </div>
+
+      ${artistTab === 'hoy' ? (hoyReservas.length === 0 ? '<div class="empty-state">📅 No tienes citas programadas para hoy</div>' : `
+        <div class="booking-list">
+          ${hoyReservas.map(a => renderArtistCard(a, artist)).join('')}
+        </div>
+      `) : ''}
+
+      ${artistTab === 'proximas' ? (proximasReservas.length === 0 ? '<div class="empty-state">⏭ No hay citas futuras</div>' : `
+        <div class="booking-list">
+          ${proximasReservas.map(a => renderArtistCard(a, artist)).join('')}
+        </div>
+      `) : ''}
+
+      ${artistTab === 'historial' ? (historial.length === 0 ? '<div class="empty-state">📋 Sin historial todavía</div>' : `
+        <div class="booking-list">
+          ${historial.map(a => renderArtistCard(a, artist)).join('')}
+        </div>
+      `) : ''}
+    </div>
+  `
+}
+
+function renderArtistCard(a, artist) {
+  const user = initDB().users.find(u => u.id === a.userId)
+  const clientName = user?.nombre || 'Cliente'
+  const clientTel = user?.telefono || ''
+  const statusColors = { pendiente: '#e67e22', completado: '#2ecc71', cancelado: '#e74c3c' }
+  const sc = statusColors[a.estado] || '#888'
+  const telLink = clientTel ? `<a href="https://wa.me/1${clientTel.replace(/\D/g,'')}" target="_blank" style="color:#2ecc71;font-size:0.8rem">📱 ${clientTel}</a>` : ''
+
+  return `
+    <div class="glass-card" style="padding:1.2rem;margin-bottom:0.75rem;border-left:3px solid ${sc}">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:0.6rem">
+        <div>
+          <div style="font-weight:700;font-size:0.95rem;color:var(--cream)">${clientName}</div>
+          <div style="font-size:0.82rem;color:${artist.color}">${a.servicio}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:700;color:var(--gold);font-size:1rem">$${a.precio}</div>
+          <div style="font-size:0.75rem;color:${sc};font-weight:600;text-transform:uppercase">${a.estado}</div>
+        </div>
+      </div>
+      <div style="font-size:0.82rem;color:var(--gray-lt)">📅 ${a.fecha} 🕐 ${a.hora || 'Sin hora'}</div>
+      ${telLink ? `<div style="margin-top:0.4rem">${telLink}</div>` : ''}
+      ${a.estado !== 'completado' && a.estado !== 'cancelado' ? `
+        <div style="margin-top:0.75rem;display:flex;gap:0.5rem">
+          <button class="btn btn-gold btn-sm" onclick="artistCompletar('${a.id}')" style="flex:1;font-size:0.78rem">✓ Completar</button>
+          <button class="btn btn-outline btn-sm" onclick="artistCancelar('${a.id}')" style="color:#e74c3c;font-size:0.78rem">✕ Cancelar</button>
+        </div>
+      ` : ''}
+    </div>
+  `
+}
+
+function artistCompletar(id) {
+  const db = initDB()
+  const a = db.appointments.find(a => a.id === id)
+  if (a) { a.estado = 'completado'; saveDB(db); msg = { type: 'success', text: '✅ Cita completada!' }; artistAuthStep = 2; render() }
+}
+
+function artistCancelar(id) {
+  if (!confirm('¿Cancelar esta cita?')) return
+  const db = initDB()
+  const a = db.appointments.find(a => a.id === id)
+  if (a) { a.estado = 'cancelado'; saveDB(db); msg = { type: 'success', text: '❌ Cita cancelada' }; artistAuthStep = 2; render() }
+}
+
 // ADMIN PANEL
 // ═══════════════════════════════════════════════════════
 let adminError = ''
