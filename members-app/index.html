@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exclusive Session — Members Area</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #000000;
+      --gold: #D4AF37;
+      --gold-lt: #F5D77A;
+      --gold-dk: #9A7B2E;
+      --wine: #6B0F1A;
+      --royal: #0057D9;
+      --royal-lt: #1E90FF;
+      --cream: #F0EAD6;
+      --white: #ffffff;
+      --gray: #555;
+      --gray-lt: #888;
+      --glass-bg: rgba(255,255,255,0.04);
+      --glass-border: rgba(212,175,55,0.18);
+      --glass-glow: rgba(212,175,55,0.08);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── PARTICLES BACKGROUND ── */
+    .bg-particles {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    .particle {
+      position: absolute; border-radius: 50%; opacity: 0.3;
+      animation: float linear infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ── GLOBAL LAYOUT ── */
+    .app-root { position: relative; z-index: 1; min-height: 100vh; }
+
+    /* ── ANIMATED GOLD BORDER ── */
+    .gold-border-anim {
+      position: relative;
+    }
+    .gold-border-anim::before {
+      content: '';
+      position: absolute; inset: -2px;
+      border-radius: inherit;
+      background: linear-gradient(45deg, transparent 30%, var(--gold) 50%, transparent 70%);
+      background-size: 300% 300%;
+      animation: shimmer 3s linear infinite;
+      z-index: -1;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── TOP NAV ── */
+    .top-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 0.75rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem; color: var(--gold); letter-spacing: 2px;
+    }
+    .nav-brand img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--gold); }
+    .nav-links { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link {
+      padding: 0.5rem 1rem; border-radius: 10px; border: none;
+      background: transparent; color: rgba(240,234,214,0.6);
+      cursor: pointer; font-size: 0.82rem; font-weight: 600;
+      transition: all 0.3s; display: flex; align-items: center; gap: 0.4rem;
+    }
+    .nav-link:hover { background: var(--glass-glow); color: var(--gold-lt); }
+    .nav-link.active { background: rgba(212,175,55,0.12); color: var(--gold-lt); }
+
+    /* ── PAGE BODY ── */
+    .page-body { padding: 2rem 1.5rem; max-width: 1200px; margin: 0 auto; }
+
+    /* ── CARDS ── */
+    .glass-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      backdrop-filter: blur(16px);
+      transition: all 0.4s ease;
+    }
+    .glass-card:hover {
+      border-color: rgba(212,175,55,0.3);
+      box-shadow: 0 8px 40px rgba(212,175,55,0.08);
+      transform: translateY(-2px);
+    }
+    .section-card {
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; color: var(--cream); letter-spacing: 3px;
+      margin-bottom: 0.3rem;
+    }
+    .section-sub { color: var(--gray-lt); font-size: 0.82rem; margin-bottom: 1.5rem; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.8rem 1.8rem; border-radius: 50px; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 700;
+      letter-spacing: 1px; transition: all 0.3s; text-decoration: none; position: relative; overflow: hidden;
+    }
+    .btn::after {
+      content: ''; position: absolute; top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: skewX(-20deg); transition: left 0.6s;
+    }
+    .btn:hover::after { left: 150%; }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold-dk) 0%, var(--gold) 30%, var(--gold-lt) 50%, var(--gold) 70%, var(--gold-dk) 100%);
+      color: #000; box-shadow: 0 0 25px rgba(212,175,55,0.4);
+    }
+    .btn-gold:hover { box-shadow: 0 0 40px rgba(212,175,55,0.6); transform: translateY(-2px); }
+    .btn-outline {
+      background: transparent; border: 1.5px solid var(--gold); color: var(--gold-lt);
+    }
+    .btn-outline:hover { background: rgba(212,175,55,0.1); }
+    .btn-royal { background: linear-gradient(135deg, #003d99, var(--royal), var(--royal-lt)); color: white; box-shadow: 0 0 20px rgba(0,87,217,0.4); }
+    .btn-royal:hover { box-shadow: 0 0 35px rgba(0,87,217,0.6); transform: translateY(-2px); }
+    .btn-wine { background: linear-gradient(135deg, #3a0610, var(--wine)); color: white; }
+    .btn-wine:hover { box-shadow: 0 0 25px rgba(107,15,26,0.5); }
+    .btn-sm { padding: 0.5rem 1.2rem; font-size: 0.75rem; }
+    .btn-danger { background: linear-gradient(135deg,#7b1a1a,#c0392b); color: white; }
+    .btn-danger:hover { box-shadow: 0 0 25px rgba(192,57,43,0.5); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+    /* ── INPUTS ── */
+    .input {
+      width: 100%; padding: 0.8rem 1rem; border-radius: 12px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(212,175,55,0.15);
+      color: var(--white); font-size: 0.9rem; outline: none; transition: all 0.3s;
+      font-family: 'Inter', sans-serif;
+    }
+    .input:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(212,175,55,0.15); }
+    .input::placeholder { color: var(--gray); }
+    .input-group { margin-bottom: 1rem; }
+    .input-group label {
+      display: block; font-size: 0.75rem; color: var(--gray-lt);
+      margin-bottom: 0.4rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
+    }
+    select.input { cursor: pointer; }
+
+    /* ── STAT BOXES ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-box {
+      padding: 1.5rem; border-radius: 16px; text-align: center;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+    }
+    .stat-val {
+      font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem;
+      letter-spacing: 2px; margin-bottom: 0.2rem;
+    }
+    .stat-lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gray-lt); font-weight: 600; }
+
+    /* ── PROGRESS ── */
+    .progress-wrap { background: rgba(255,255,255,0.06); border-radius: 20px; height: 14px; overflow: hidden; margin: 0.5rem 0; }
+    .progress-fill {
+      height: 100%; border-radius: 20px;
+      background: linear-gradient(90deg, var(--gold-dk), var(--gold), var(--gold-lt));
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .progress-fill.green { background: linear-gradient(90deg,#1e8449,#27ae60,#2ecc71); }
+    .progress-fill.royal { background: linear-gradient(90deg,#003d99,var(--royal),var(--royal-lt)); }
+    .progress-fill.wine { background: linear-gradient(90deg,#3a0610,var(--wine),#c0392b); }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.68rem;
+      font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .badge-gold { background: rgba(212,175,55,0.15); color: var(--gold-lt); border: 1px solid rgba(212,175,55,0.3); }
+    .badge-royal { background: rgba(0,87,217,0.15); color: var(--royal-lt); border: 1px solid rgba(0,87,217,0.3); }
+    .badge-wine { background: rgba(107,15,26,0.3); color: #e74c3c; border: 1px solid rgba(107,15,26,0.5); }
+    .badge-green { background: rgba(39,174,96,0.15); color: #2ecc71; border: 1px solid rgba(39,174,96,0.3); }
+    .badge-bronze { background: rgba(205,127,50,0.15); color: #cd7f32; border: 1px solid rgba(205,127,50,0.3); }
+    .badge-plata { background: rgba(192,192,192,0.1); color: #c0c0c0; border: 1px solid rgba(192,192,192,0.3); }
+    .badge-oro { background: rgba(212,175,55,0.15); color: var(--gold-lt); border: 1px solid rgba(212,175,55,0.3); }
+
+    /* ── ALERTS ── */
+    .alert { padding: 1rem 1.25rem; border-radius: 14px; font-size: 0.85rem; margin-bottom: 1rem; border: 1px solid; }
+    .alert-success { background: rgba(39,174,96,0.1); border-color: rgba(39,174,96,0.3); color: #2ecc71; }
+    .alert-error { background: rgba(231,76,60,0.1); border-color: rgba(231,76,60,0.3); color: #e74c3c; }
+    .alert-info { background: rgba(52,152,219,0.1); border-color: rgba(52,152,219,0.3); color: #3498db; }
+    .alert-gold { background: rgba(212,175,55,0.1); border-color: rgba(212,175,55,0.3); color: var(--gold-lt); }
+
+    /* ── TABS ── */
+    .tab-bar { display: flex; gap: 0.3rem; margin-bottom: 1.5rem; flex-wrap: wrap; padding: 0.3rem; background: rgba(255,255,255,0.03); border-radius: 14px; border: 1px solid var(--glass-border); }
+    .tab-btn {
+      flex: 1; padding: 0.6rem 1rem; border: none; background: transparent;
+      color: var(--gray-lt); cursor: pointer; font-size: 0.8rem; font-weight: 600;
+      border-radius: 10px; transition: all 0.3s; text-align: center; white-space: nowrap;
+    }
+    .tab-btn.active { background: rgba(212,175,55,0.15); color: var(--gold-lt); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+    .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.05); color: var(--cream); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px); z-index: 1000;
+      display: flex; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal {
+      background: rgba(10,10,10,0.98); border: 1px solid var(--glass-border);
+      border-radius: 24px; padding: 2rem; max-width: 500px; width: 100%;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.8), 0 0 40px rgba(212,175,55,0.05);
+    }
+    .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--cream); letter-spacing: 3px; margin-bottom: 1.5rem; }
+    .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; justify-content: flex-end; flex-wrap: wrap; }
+
+    /* ── ARTIST CARDS ── */
+    .artist-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .artist-card {
+      padding: 1.5rem 1rem; border-radius: 16px; text-align: center; cursor: pointer;
+      background: var(--glass-bg); border: 2px solid var(--glass-border);
+      transition: all 0.3s;
+    }
+    .artist-card:hover { border-color: var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.15); }
+    .artist-card.selected { border-color: var(--gold); background: rgba(212,175,55,0.08); box-shadow: 0 0 25px rgba(212,175,55,0.2); }
+    .artist-avatar { width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 0.75rem; border: 2px solid var(--gold); object-fit: cover; }
+    .artist-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--cream); letter-spacing: 2px; }
+    .artist-spec { font-size: 0.72rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.2rem; }
+
+    /* ── TIME SLOTS ── */
+    .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin: 1rem 0; }
+    .time-slot {
+      padding: 0.6rem; border-radius: 10px; text-align: center; cursor: pointer;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.82rem; font-weight: 600; color: var(--cream); transition: all 0.3s;
+    }
+    .time-slot:hover { border-color: var(--royal); color: var(--royal-lt); }
+    .time-slot.selected { border-color: var(--royal); background: rgba(0,87,217,0.15); color: var(--royal-lt); }
+    .time-slot.booked { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+
+    /* ── GALLERY ── */
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; }
+    .gallery-item { border-radius: 12px; overflow: hidden; cursor: pointer; position: relative; aspect-ratio: 1; }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
+    .gallery-item:hover img { transform: scale(1.08); }
+    .gallery-item-num {
+      position: absolute; bottom: 6px; right: 6px;
+      background: rgba(0,0,0,0.7); color: var(--gold-lt);
+      font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.4rem;
+      border-radius: 6px;
+    }
+
+    /* ── GIFT CARD PREVIEW ── */
+    .gc-preview {
+      border-radius: 16px; padding: 1.5rem; margin: 1rem 0;
+      background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(107,15,26,0.15));
+      border: 1px solid rgba(212,175,55,0.2); text-align: center;
+    }
+    .gc-preview .gc-brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--gold); letter-spacing: 3px; }
+    .gc-preview .gc-amount { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--cream); }
+    .gc-preview .gc-to { font-size: 0.8rem; color: var(--gray-lt); margin-top: 0.5rem; }
+
+    /* ── APPOINTMENT CARD ── */
+    .appt-card {
+      padding: 1.25rem; border-radius: 14px; margin-bottom: 0.75rem;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .appt-info .appt-svc { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--cream); letter-spacing: 2px; }
+    .appt-info .appt-details { font-size: 0.78rem; color: var(--gray-lt); margin-top: 0.2rem; }
+    .appt-info .appt-artist { font-size: 0.75rem; color: var(--gold); }
+
+    /* ── TABLE ── */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      text-align: left; padding: 0.75rem 1rem; color: var(--gray-lt);
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .data-table td { padding: 0.85rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; }
+    .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* ── LOGIN PAGE ── */
+    .login-screen {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 2rem;
+      background: radial-gradient(ellipse at top, rgba(212,175,55,0.04) 0%, transparent 60%);
+    }
+    .login-logo-wrap { text-align: center; margin-bottom: 2rem; }
+    .login-logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--gold); letter-spacing: 5px; }
+    .login-tagline { color: var(--cream); font-size: 0.9rem; margin-top: 0.3rem; opacity: 0.7; }
+    .login-box { width: 100%; max-width: 440px; }
+
+    /* ── ADMIN LAYOUT ── */
+    .admin-header {
+      background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--glass-border);
+      padding: 1rem 2rem; display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 1rem;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .admin-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--gold); letter-spacing: 3px; }
+
+    /* ── BOOKING WIZARD ── */
+    .wizard-steps { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; }
+    .wizard-step { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--gray-lt); }
+    .wizard-step .step-num {
+      width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--gray-lt);
+      display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700;
+    }
+    .wizard-step.active .step-num { border-color: var(--gold); color: var(--gold); background: rgba(212,175,55,0.1); }
+    .wizard-step.done .step-num { border-color: #2ecc71; color: #2ecc71; background: rgba(39,174,96,0.1); }
+    .wizard-step.active .step-lbl { color: var(--gold-lt); }
+    .wizard-line { width: 40px; height: 1px; background: var(--gray-lt); margin-top: 14px; opacity: 0.3; }
+
+    /* ── CONFETTI ── */
+    @keyframes confetti-fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(1080deg); opacity: 0; } }
+    .confetti-piece { position: fixed; top: -20px; width: 8px; height: 8px; z-index: 9999; pointer-events: none; border-radius: 2px; animation: confetti-fall 2.5s linear forwards; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(212,175,55,0.3); } 50% { box-shadow: 0 0 40px rgba(212,175,55,0.6); } }
+    @keyframes countUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .animate { animation: slideUp 0.5s ease forwards; }
+    .animate-fade { animation: fadeIn 0.4s ease forwards; }
+    .animate-count { animation: countUp 0.6s ease forwards; }
+    .pulse-gold { animation: pulse-glow 2s ease-in-out infinite; }
+
+    /* ── DIVIDER ── */
+    .gold-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 1.5rem 0; opacity: 0.4; }
+
+    /* ── GRID HELPERS ── */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+
+    /* ── BOOKING SUMMARY ── */
+    .booking-summary {
+      border-radius: 14px; padding: 1.25rem; margin-top: 1.5rem;
+      background: rgba(212,175,55,0.05); border: 1px solid rgba(212,175,55,0.2);
+    }
+    .booking-summary-row { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+    .booking-summary-row:last-child { border: none; font-weight: 700; color: var(--gold-lt); font-size: 1rem; padding-top: 0.75rem; }
+
+    /* ── LEVEL CARD ── */
+    .level-card { padding: 1.5rem; border-radius: 16px; text-align: center; }
+    .level-card .level-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 3px; }
+    .level-card .level-visits { font-size: 0.75rem; color: var(--gray-lt); margin-top: 0.3rem; }
+    .level-card .level-perk { font-size: 0.8rem; color: var(--cream); margin-top: 0.5rem; }
+    .level-card.current { border: 2px solid; box-shadow: 0 0 20px; }
+
+    /* ── REFERRAL LINK ── */
+    .referral-code-box {
+      border-radius: 14px; padding: 1.5rem; text-align: center; margin: 1rem 0;
+      background: linear-gradient(135deg, rgba(0,87,217,0.08), rgba(212,175,55,0.08));
+      border: 1px solid rgba(212,175,55,0.2);
+    }
+    .referral-big-code {
+      font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem;
+      color: var(--gold); letter-spacing: 6px; margin: 0.5rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .time-grid { grid-template-columns: repeat(3, 1fr); }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { gap: 0.2rem; }
+      .nav-link { padding: 0.4rem 0.7rem; font-size: 0.75rem; }
+      .page-body { padding: 1rem; }
+      .wizard-line { width: 20px; }
+      .wizard-step .step-lbl { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-particles" id="bg-particles"></div>
+<div class="app-root" id="app-root"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA LAYER — localStorage
+// ═══════════════════════════════════════════════════════
+const DB_KEY = 'es_app_db_v2'
+const ADMIN_PASS = 'P4lant1R'
+const ADMIN_SECOND_PASS = 'Mordor777'
+const ADMIN_WA = 'wa.me/16464882233'
+const WEB_URL = 'https://jlx78gbg9ptlf.space.minimax.io'
+
+function initDB() {
+  let db = localStorage.getItem(DB_KEY)
+  if (!db) {
+    db = {
+      users: [], wallets: [], transactions: [], referrals: [], referralCodes: [],
+      installments: [], appointments: [], giftCards: [], spins: [], streaks: [], bookings: []
+    }
+    saveDB(db)
+    seedDB(db)
+  }
+  return JSON.parse(localStorage.getItem(DB_KEY))
+}
+function saveDB(db) { localStorage.setItem(DB_KEY, JSON.stringify(db)) }
+function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 9) }
+function genCode() { return Math.random().toString(36).substring(2, 8).toUpperCase() }
+function hashPass(p) { return btoa(p + '___es_vip') }
+function checkPass(p, h) { return hashPass(p) === h }
+
+function findUser(email) { const db = initDB(); return db.users.find(u => u.email === email) }
+function findUserById(id) { const db = initDB(); return db.users.find(u => u.id === id) }
+function getWallet(userId) { const db = initDB(); return db.wallets.find(w => w.userId === userId) }
+
+function getSession() { const d = localStorage.getItem('es_session'); return d ? JSON.parse(d) : null }
+function setSession(u) { localStorage.setItem('es_session', JSON.stringify(u)) }
+function clearSession() { localStorage.removeItem('es_session') }
+
+function seedDB(db) {
+  // Admin user
+  const aid = genId(); const awid = genId()
+  db.users.push({ id: aid, email: 'nelson@exclusivesession.com', telefono: '+16464882233', nombre: 'Nelson Mendoza', password: hashPass('demo123'), rol: 'user', nivel: 'oro', visitas: 15, score: 0, activo: true, termsAccepted: true, createdAt: new Date().toISOString() })
+  db.wallets.push({ id: awid, userId: aid, saldo: 450, saldoCongelado: 150, createdAt: new Date().toISOString() })
+  db.referralCodes.push({ id: genId(), userId: aid, codigo: 'NELSON01', createdAt: new Date().toISOString() })
+  db.streaks.push({ id: genId(), userId: aid, estrellas: 3, streakActiva: true, createdAt: new Date().toISOString() })
+
+  const bid = genId(); const bwid = genId()
+  db.users.push({ id: bid, email: 'james@exclusivesession.com', telefono: '+13473163496', nombre: 'James Barber', password: hashPass('demo123'), rol: 'user', nivel: 'plata', visitas: 6, score: 0, activo: true, termsAccepted: true, createdAt: new Date().toISOString() })
+  db.wallets.push({ id: bwid, userId: bid, saldo: 120, saldoCongelado: 0, createdAt: new Date().toISOString() })
+  db.referralCodes.push({ id: genId(), userId: bid, codigo: 'JAMES01', createdAt: new Date().toISOString() })
+
+  const cid = genId(); const cwid = genId()
+  db.users.push({ id: cid, email: 'karen@example.com', telefono: '+10000000001', nombre: 'Karen Pérez', password: hashPass('demo123'), rol: 'user', nivel: 'bronce', visitas: 1, score: 0, activo: true, termsAccepted: false, createdAt: new Date().toISOString() })
+  db.wallets.push({ id: cwid, userId: cid, saldo: 30, saldoCongelado: 0, createdAt: new Date().toISOString() })
+  db.referralCodes.push({ id: genId(), userId: cid, codigo: 'KAREN01', createdAt: new Date().toISOString() })
+
+  // Karen referred by Nelson
+  const plazo = new Date(); plazo.setMonth(plazo.getMonth() + 6)
+  db.referrals.push({ id: genId(), codigoId: db.referralCodes.find(r => r.userId === aid).id, referidoId: cid, referidorId: aid, estado: 'en_proceso', gastoAcumulado: 65, plazoValido: plazo.toISOString(), createdAt: new Date().toISOString() })
+
+  // Installment demo
+  db.installments.push({ id: genId(), userId: aid, nombreTatuaje: 'Dorsal dragón medieval', montoObjetivo: 800, montoAbonado: 300, semanas: 16, estado: 'activa', completada: false, createdAt: new Date().toISOString() })
+
+  // Appointment
+  const apptId = genId()
+  db.appointments.push({ id: apptId, userId: aid, servicio: 'tattoo', precio: 800, fecha: new Date(Date.now() + 10 * 86400000).toISOString(), estado: 'pendiente', artista: 'Nelson', hora: '14:00', pagadaConSaldo: false, createdAt: new Date().toISOString() })
+  db.bookings.push({ id: apptId, userId: aid, servicio: 'tattoo', artista: 'Nelson', precio: 800, fecha: new Date(Date.now() + 10 * 86400000).toISOString(), hora: '14:00', estado: 'confirmada', createdAt: new Date().toISOString() })
+
+  // Transactions
+  db.transactions.push(
+    { id: genId(), walletId: awid, tipo: 'carga', monto: 500, descripcion: 'Carga inicial', createdAt: new Date().toISOString() },
+    { id: genId(), walletId: awid, tipo: 'abono_cuota', monto: -300, descripcion: 'Abono cuota dragón', createdAt: new Date().toISOString() },
+    { id: genId(), walletId: awid, tipo: 'carga', monto: 100, descripcion: 'Gift card canjeada', createdAt: new Date().toISOString() }
+  )
+
+  saveDB(db)
+}
+
+// ═══════════════════════════════════════════════════════
+// ARTISTS
+// ═══════════════════════════════════════════════════════
+const ARTISTS = [
+  { id: 'nelson', nombre: 'Nelson Tattoo', especialdad: 'Tattoo Premium', color: '#D4AF37' },
+  { id: 'james', nombre: 'James Barber', especialdad: 'Barbería & Fade', color: '#0057D9' },
+  { id: 'jc', nombre: 'JC Barber', especialdad: 'Barbería Clásica', color: '#6B0F1A' },
+  { id: 'sharith', nombre: 'Sharith Nails', especialdad: 'Manicure & Pedicure', color: '#e91e8c' },
+  { id: 'keren', nombre: 'Keren Nails', especialdad: 'Nail Art Premium', color: '#ff6b35' },
+]
+const SERVICES = [
+  { id: 'tattoo', nombre: 'Tattoo', precio: 0, desc: 'Desde diseño hasta realismo', artistas: ['nelson'] },
+  { id: 'barber', nombre: 'Barbería', precio: 0, desc: 'Fade, corte clásico, barba', artistas: ['james', 'jc'] },
+  { id: 'manicure', nombre: 'Manicure', precio: 0, desc: 'Nails, pedicure, nail art', artistas: ['sharith', 'keren'] },
+]
+const TIME_SLOTS = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00']
+
+// ═══════════════════════════════════════════════════════
+// CONFETTI
+// ═══════════════════════════════════════════════════════
+function confetti(c1 = '#D4AF37', c2 = '#F5D77A') {
+  const colors = [c1, c2, '#0057D9', '#6B0F1A', '#fff', '#e91e8c']
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div')
+    el.className = 'confetti-piece'
+    el.style.left = Math.random() * 100 + 'vw'
+    el.style.background = colors[Math.floor(Math.random() * colors.length)]
+    el.style.animationDelay = Math.random() * 0.5 + 's'
+    el.style.animationDuration = (2 + Math.random() * 1.5) + 's'
+    el.style.width = (6 + Math.random() * 8) + 'px'
+    el.style.height = (6 + Math.random() * 8) + 'px'
+    el.style.borderRadius = Math.random() > 0.4 ? '50%' : '2px'
+    document.body.appendChild(el)
+    setTimeout(() => el.remove(), 4000)
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// PARTICLES
+// ═══════════════════════════════════════════════════════
+function initParticles() {
+  const container = document.getElementById('bg-particles')
+  if (container.children.length > 0) return
+  const colors = ['#D4AF37', '#F5D77A', '#0057D9']
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div')
+    p.className = 'particle'
+    const size = 2 + Math.random() * 4
+    p.style.width = size + 'px'
+    p.style.height = size + 'px'
+    p.style.left = Math.random() * 100 + '%'
+    p.style.background = colors[Math.floor(Math.random() * colors.length)]
+    p.style.animationDuration = (15 + Math.random() * 25) + 's'
+    p.style.animationDelay = Math.random() * 20 + 's'
+    container.appendChild(p)
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// GLOBAL STATE
+// ═══════════════════════════════════════════════════════
+let currentPage = 'login'
+let currentTab = 'dashboard'
+let adminAuthStep = 1
+let adminTab = 'stats'
+let msg = null
+let loginMode = 'login'
+let loginError = ''
+let showTerms = false
+let spun = false, spinResult = null
+let wizardStep = 1
+let booking = { servicio: '', artista: '', fecha: '', hora: '', precio: 0 }
+let showModal = null
+function openModal(v) { showModal = v; render() }
+function closeModal() { showModal = null; showTerms = false; render() }
+let modalData = null
+
+// ═══════════════════════════════════════════════════════
+// RENDER ENTRY
+// ═══════════════════════════════════════════════════════
+function render() {
+  initParticles()
+  const session = getSession()
+  const root = document.getElementById('app-root')
+  if (!session) { renderLogin(root); return }
+  if (session.rol === 'admin') { renderAdmin(root); return }
+  renderApp(root)
+}
+
+// ═══════════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════════
+function renderLogin(root) {
+  root.innerHTML = `
+    <div class="login-screen animate">
+      <div class="login-logo-wrap">
+        <div class="login-logo-text">EXCLUSIVE SESSION</div>
+        <div class="login-tagline">Members Area — VIP Experience</div>
+      </div>
+      <div class="login-box">
+        <div class="glass-card section-card" style="padding:2.5rem">
+          <div class="tab-bar" style="margin-bottom:1.5rem">
+            <button class="tab-btn ${loginMode==='login'?'active':''}" onclick="loginMode='login';loginError='';render()">Iniciar Sesión</button>
+            <button class="tab-btn ${loginMode==='registro'?'active':''}" onclick="loginMode='registro';loginError='';render()">Registrarse</button>
+          </div>
+          ${loginError ? `<div class="alert alert-error">${loginError}</div>` : ''}
+          <form onsubmit="handleLogin(event)">
+            ${loginMode==='registro' ? `
+              <div class="input-group"><label>Nombre completo</label><input class="input" id="f-nombre" type="text" placeholder="Tu nombre" required></div>
+              <div class="input-group"><label>Teléfono</label><input class="input" id="f-tel" type="tel" placeholder="+1 646 000 0000" required></div>
+              <div class="input-group"><label>Código de referido</label><input class="input" id="f-refcode" type="text" placeholder="ABC123 (opcional)"></div>
+            ` : ''}
+            <div class="input-group"><label>Email</label><input class="input" id="f-email" type="email" placeholder="tu@email.com" required></div>
+            <div class="input-group"><label>Contraseña</label><input class="input" id="f-pass" type="password" placeholder="••••••••" required></div>
+            <button type="submit" class="btn btn-gold" style="width:100%;margin-top:0.5rem">
+              ${loginMode==='login' ? '🔐 Entrar' : '✨ Crear Cuenta'}
+            </button>
+          </form>
+          <div class="gold-divider"></div>
+          <div style="text-align:center">
+            <a href="#" onclick="event.preventDefault();adminAuthStep=1;render()" style="color:var(--gray-lt);font-size:0.8rem">🔒 Acceso Administrador</a>
+          </div>
+          <div class="alert alert-info" style="margin-top:1rem;font-size:0.78rem">
+            Demo: <strong>nelson@exclusivesession.com</strong> / <strong>demo123</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+function handleLogin(e) {
+  e.preventDefault()
+  const db = initDB()
+  const email = document.getElementById('f-email').value
+  const pass = document.getElementById('f-pass').value
+
+  if (loginMode === 'registro') {
+    const nombre = document.getElementById('f-nombre').value
+    const telefono = document.getElementById('f-tel').value
+    const refCode = document.getElementById('f-refcode')?.value || ''
+    if (db.users.find(u => u.email === email)) { loginError = 'Email ya registrado'; render(); return }
+    const uid = genId(); const wid = genId(); const cid = genId()
+    const newUser = { id: uid, email, telefono, nombre, password: hashPass(pass), rol: 'user', nivel: 'bronce', visitas: 0, score: 0, activo: true, termsAccepted: false, createdAt: new Date().toISOString() }
+    db.users.push(newUser)
+    db.wallets.push({ id: wid, userId: uid, saldo: 0, saldoCongelado: 0, createdAt: new Date().toISOString() })
+    const code = genCode()
+    db.referralCodes.push({ id: cid, userId: uid, codigo: code, createdAt: new Date().toISOString() })
+    db.streaks.push({ id: genId(), userId: uid, estrellas: 0, streakActiva: true, createdAt: new Date().toISOString() })
+    if (refCode) {
+      const refData = db.referralCodes.find(r => r.codigo === refCode)
+      if (refData) {
+        const pl = new Date(); pl.setMonth(pl.getMonth() + 6)
+        db.referrals.push({ id: genId(), codigoId: refData.id, referidoId: uid, referidorId: refData.userId, estado: 'registrado', gastoAcumulado: 0, plazoValido: pl.toISOString(), createdAt: new Date().toISOString() })
+      }
+    }
+    saveDB(db)
+    setSession(newUser)
+    render()
+    return
+  }
+
+  const user = db.users.find(u => u.email === email)
+  if (!user || !user.activo || !checkPass(pass, user.password)) {
+    loginError = 'Credenciales inválidas'; render(); return
+  }
+  setSession(user)
+  currentTab = 'dashboard'
+  render()
+}
+
+// ═══════════════════════════════════════════════════════
+// APP
+// ═══════════════════════════════════════════════════════
+function getGreeting() { const h = new Date().getHours(); return h < 12 ? 'Buenos días' : h < 18 ? 'Buenas tardes' : 'Buenas noches' }
+
+function renderApp(root) {
+  const user = getSession()
+  const db = initDB()
+  const wallet = db.wallets.find(w => w.userId === user.id) || { saldo: 0, saldoCongelado: 0 }
+  const referrals = db.referrals.filter(r => r.referidorId === user.id)
+  const refCode = db.referralCodes.find(r => r.userId === user.id)
+  const appointments = db.appointments.filter(a => a.userId === user.id).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
+  const installments = db.installments.filter(i => i.userId === user.id)
+  const today = new Date().toDateString()
+  const spinHoy = db.spins.find(s => s.userId === user.id && new Date(s.createdAt).toDateString() === today)
+  const nivelColors = { bronce: '#cd7f32', plata: '#c0c0c0', oro: '#D4AF37' }
+
+  root.innerHTML = `
+    <!-- TOP NAV -->
+    <div class="top-nav">
+      <div class="nav-brand">
+        <div style="width:36px;height:36px;border-radius:50%;border:1.5px solid var(--gold);background:rgba(212,175,55,0.1);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--gold)">ES</div>
+        EXCLUSIVE SESSION
+      </div>
+      <div class="nav-links">
+        <button class="nav-link ${currentTab==='dashboard'?'active':''}" onclick="currentTab='dashboard';wizardStep=1;render()">🏠 Inicio</button>
+        <button class="nav-link ${currentTab==='booking'?'active':''}" onclick="currentTab='booking';wizardStep=1;render()">📅 Reservar</button>
+        <button class="nav-link ${currentTab==='wallet'?'active':''}" onclick="currentTab='wallet';render()">💰 Billetera</button>
+        <button class="nav-link ${currentTab==='referidos'?'active':''}" onclick="currentTab='referidos';render()">🎁 Referidos</button>
+        <button class="nav-link ${currentTab==='cuotas'?'active':''}" onclick="currentTab='cuotas';render()">📊 Cuotas</button>
+        <button class="nav-link ${currentTab==='galeria'?'active':''}" onclick="currentTab='galeria';render()">🖼️ Galería</button>
+        <button class="nav-link ${currentTab==='giftcards'?'active':''}" onclick="currentTab='giftcards';render()">🎁 Gift Cards</button>
+        <button class="nav-link" onclick="clearSession();render()" style="color:#e74c3c">🚪</button>
+      </div>
+    </div>
+
+    <div class="page-body">
+      ${msg ? `<div class="alert alert-${msg.type} animate" style="margin-bottom:1rem">${msg.text}</div>` : ''}
+
+      ${currentTab === 'dashboard' ? renderDashboard(db, user, wallet, referrals, appointments, spinHoy, nivelColors) : ''}
+      ${currentTab === 'booking' ? renderBooking(db, user, wallet) : ''}
+      ${currentTab === 'wallet' ? renderWallet(db, user, wallet, appointments) : ''}
+      ${currentTab === 'referidos' ? renderReferidos(db, user, referrals, refCode) : ''}
+      ${currentTab === 'cuotas' ? renderCuotas(db, user, wallet, installments) : ''}
+      ${currentTab === 'galeria' ? renderGaleria() : ''}
+      ${currentTab === 'giftcards' ? renderGiftCards(db, user, wallet) : ''}
+    </div>
+
+    ${showTerms ? renderTermsModal() : ''}
+    ${showModal ? renderCustomModal() : ''}
+  `
+}
+
+function renderDashboard(db, user, wallet, referrals, appointments, spinHoy, nivelColors) {
+  const totalCalif = referrals.filter(r => r.estado === 'calificado').length
+  return `
+    <div class="animate">
+      <!-- Hero greeting -->
+      <div class="glass-card section-card" style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(212,175,55,0.05),rgba(0,87,217,0.03))">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+          <div>
+            <div style="font-size:0.85rem;color:var(--gray-lt);margin-bottom:0.3rem">${getGreeting()},</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--cream);letter-spacing:3px">${user.nombre}</div>
+            <div style="margin-top:0.5rem">
+              <span class="badge badge-${user.nivel}" style="background:${nivelColors[user.nivel]}20;color:${nivelColors[user.nivel]};border:1px solid ${nivelColors[user.nivel]}40">
+                ${user.nivel.toUpperCase()} — ${user.visitas} visitas
+              </span>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:0.7rem;color:var(--gray-lt);text-transform:uppercase;letter-spacing:2px">Saldo Disponible</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--gold);letter-spacing:2px" class="animate-count">$${(wallet.saldo||0).toFixed(2)}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="grid-2" style="margin-bottom:1.5rem">
+        <div class="glass-card section-card" style="text-align:center;cursor:pointer" onclick="currentTab='booking';wizardStep=1;render()">
+          <div style="font-size:2.5rem;margin-bottom:0.5rem">📅</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px">Reservar Cita</div>
+          <div style="font-size:0.78rem;color:var(--gray-lt);margin-top:0.3rem">Tattoo · Barbería · Manicure</div>
+        </div>
+        <div class="glass-card section-card" style="text-align:center" onclick="currentTab='giftcards';render()">
+          <div style="font-size:2.5rem;margin-bottom:0.5rem">🎁</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px">Gift Cards</div>
+          <div style="font-size:0.78rem;color:var(--gray-lt);margin-top:0.3rem">Compra o regala saldo VIP</div>
+        </div>
+      </div>
+
+      <!-- Referidos preview -->
+      <div class="glass-card section-card" style="margin-bottom:1.5rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px">🎁 Referidos</div>
+          <span style="font-size:0.75rem;color:var(--gold)">${referrals.length} registrados · ${totalCalif} calificados / 10</span>
+        </div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:${Math.min(100,(totalCalif/10)*100)}%"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:0.5rem;font-size:0.78rem;color:var(--gray-lt)">
+          <span>Tu código: <strong style="color:var(--gold)">${db.referralCodes.find(r=>r.userId===user.id)?.codigo||'N/A'}</strong></span>
+          <button class="btn btn-sm btn-outline" onclick="currentTab='referidos';render()">Ver detalles</button>
+        </div>
+      </div>
+
+      <!-- Mis citas -->
+      <div class="glass-card section-card">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px;margin-bottom:1rem">📅 Próximas Citas</div>
+        ${appointments.filter(a=>a.estado==='pendiente'||a.estado==='confirmada').length===0 ?
+          `<div style="text-align:center;padding:1.5rem;color:var(--gray-lt)">No tienes citas próximas</div>` :
+          appointments.filter(a=>a.estado==='pendiente'||a.estado==='confirmada').slice(0,3).map(a=>`
+            <div class="appt-card">
+              <div class="appt-info">
+                <div class="appt-svc">${a.servicio.toUpperCase()}</div>
+                <div class="appt-details">${new Date(a.fecha).toLocaleDateString('es-ES',{weekday:'short',month:'short',day:'numeric'})} · ${a.hora}</div>
+                <div class="appt-artist">con ${a.artista}</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--gold)">$${a.precio}</div>
+                <span class="badge badge-${a.estado==='confirmada'?'green':'gold'}">${a.estado}</span>
+              </div>
+            </div>
+          `).join('')
+        }
+      </div>
+    </div>
+  `
+}
+
+// ═══════════════════════════════════════════════════════
+// BOOKING
+// ═══════════════════════════════════════════════════════
+function renderBooking(db, user, wallet) {
+  const svc = SERVICES.find(s => s.id === booking.servicio)
+  const artista = ARTISTS.find(a => a.id === booking.artista)
+
+  return `
+    <div class="animate">
+      <!-- Wizard steps -->
+      <div class="glass-card section-card" style="margin-bottom:1.5rem">
+        <div class="wizard-steps">
+          ${[1,2,3,4].map((s,i) => `
+            ${i>0?'<div class="wizard-line"></div>':''}
+            <div class="wizard-step ${wizardStep===s?'active':wizardStep>s?'done':''}">
+              <div class="step-num">${wizardStep>s?'✓':s}</div>
+              <div class="step-lbl">${['Servicio','Artista','Fecha','Pago'][i]}</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- STEP 1: SERVICE -->
+        ${wizardStep === 1 ? `
+          <div class="section-title">Selecciona tu Servicio</div>
+          <div class="section-sub">Tattoo · Barbería · Manicure</div>
+          <div class="grid-3">
+            ${SERVICES.map(s => `
+              <div class="glass-card" style="padding:2rem;text-align:center;cursor:pointer;border:2px solid ${booking.servicio===s.id?'var(--gold)':'transparent'};box-shadow:${booking.servicio===s.id?'0 0 25px rgba(212,175,55,0.15)':''}" onclick="booking.servicio='${s.id}';wizardStep=2;render()">
+                <div style="font-size:3rem;margin-bottom:0.75rem">${s.id==='tattoo'?'🎨':s.id==='barber'?'💈':'💅'}</div>
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--cream);letter-spacing:2px">${s.nombre}</div>
+                <div style="font-size:0.78rem;color:var(--gray-lt);margin-top:0.3rem">${s.desc}</div>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <!-- STEP 2: ARTIST -->
+        ${wizardStep === 2 ? `
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+            <button class="btn btn-sm btn-outline" onclick="wizardStep=1;render()">← Volver</button>
+            <div>
+              <div class="section-title">Elige tu Artista</div>
+              <div class="section-sub">Servicio: ${svc?.nombre}</div>
+            </div>
+          </div>
+          <div class="artist-grid">
+            ${ARTISTS.filter(a => svc?.artistas.includes(a.id)).map(a => `
+              <div class="artist-card ${booking.artista===a.id?'selected':''}" onclick="booking.artista='${a.id}';wizardStep=3;render()">
+                <div class="artist-avatar" style="background:${a.color}22;border-color:${a.color}">
+                  <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:${a.color}">${a.nombre.charAt(0)}</div>
+                </div>
+                <div class="artist-name">${a.nombre}</div>
+                <div class="artist-spec">${a.especialdad}</div>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <!-- STEP 3: DATE + TIME -->
+        ${wizardStep === 3 ? `
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+            <button class="btn btn-sm btn-outline" onclick="wizardStep=2;render()">← Volver</button>
+            <div>
+              <div class="section-title">Fecha y Hora</div>
+              <div class="section-sub">con ${artista?.nombre} · ${svc?.nombre}</div>
+            </div>
+          </div>
+          <div class="input-group"><label>Fecha</label>
+            <input class="input" type="date" id="book-date" min="${new Date().toISOString().split('T')[0]}" value="${booking.fecha}" onchange="booking.fecha=this.value;render()">
+          </div>
+          ${booking.fecha ? `
+            <div class="input-group"><label>Hora disponible</label></div>
+            <div class="time-grid">
+              ${TIME_SLOTS.map(t => {
+                const booked = db.appointments.find(a => a.artista === booking.artista && a.fecha?.split('T')[0] === booking.fecha && a.hora === t)
+                return `<div class="time-slot ${booking.hora===t?'selected':''} ${booked?'booked':''}" onclick="${booked?'':`booking.hora='${t}';render()`}">${t}${booked?' ❌':''}</div>`
+              }).join('')}
+            </div>
+          ` : ''}
+          ${booking.fecha && booking.hora ? `
+            <button class="btn btn-gold" style="width:100%;margin-top:1rem" onclick="wizardStep=4;render()">Siguiente →</button>
+          ` : ''}
+        ` : ''}
+
+        <!-- STEP 4: PAYMENT -->
+        ${wizardStep === 4 ? `
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+            <button class="btn btn-sm btn-outline" onclick="wizardStep=3;render()">← Volver</button>
+            <div class="section-title">Resumen y Pago</div>
+          </div>
+          <div class="booking-summary">
+            <div class="booking-summary-row"><span>Servicio</span><span style="color:var(--cream)">${svc?.nombre}</span></div>
+            <div class="booking-summary-row"><span>Artista</span><span style="color:var(--cream)">${artista?.nombre}</span></div>
+            <div class="booking-summary-row"><span>Fecha</span><span style="color:var(--cream)">${new Date(booking.fecha).toLocaleDateString('es-ES',{weekday:'long',month:'long',day:'numeric'})}</span></div>
+            <div class="booking-summary-row"><span>Hora</span><span style="color:var(--cream)">${booking.hora}</span></div>
+            <div class="booking-summary-row"><span>💰 Tu saldo</span><span style="color:var(--gold)">$${(wallet.saldo||0).toFixed(2)}</span></div>
+            <div class="booking-summary-row"><span style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem">TOTAL A PAGAR</span><span style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem">$${svc?.precio||0}</span></div>
+          </div>
+          <div class="alert alert-info" style="margin-top:1rem">
+            💡 Para confirmar tu cita, paga con tu saldo disponible. Esto bloquea tu turno.
+          </div>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem">
+            <button class="btn btn-gold" style="flex:1" onclick="confirmBooking()" ${wallet.saldo<=0?'disabled title="Saldo insuficiente"':''}>
+              💰 Pagar con Saldo ($${(wallet.saldo||0).toFixed(2)})
+            </button>
+            <a href="https://wa.me/16464882233?text=${encodeURIComponent(`Hola! Quiero reservar: ${svc?.nombre} con ${artista?.nombre} el ${new Date(booking.fecha).toLocaleDateString('es-ES')} a las ${booking.hora}`)}" target="_blank" class="btn btn-royal" style="flex:1;text-align:center">
+              💬 Reservar por WhatsApp
+            </a>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `
+}
+
+function confirmBooking() {
+  const db = initDB()
+  const user = getSession()
+  const wallet = db.wallets.find(w => w.userId === user.id)
+  const precio = 100 // default price, can be customized
+
+  if (!wallet || wallet.saldo < precio) { msg = { type: 'error', text: 'Saldo insuficiente para confirmar' }; render(); return }
+
+  wallet.saldo -= precio
+  const apptId = genId()
+  const appt = {
+    id: apptId, userId: user.id, servicio: booking.servicio, artista: ARTISTS.find(a => a.id === booking.artista)?.nombre,
+    precio, fecha: booking.fecha, hora: booking.hora, estado: 'confirmada', pagadaConSaldo: true, createdAt: new Date().toISOString()
+  }
+  db.appointments.push(appt)
+  db.bookings.push({ ...appt })
+  db.transactions.push({ id: genId(), walletId: wallet.id, tipo: 'descuento_cita', monto: -precio, descripcion: `Pago cita ${booking.servicio} — ${appt.artista}`, createdAt: new Date().toISOString() })
+  saveDB(db)
+
+  confetti()
+  msg = { type: 'success', text: `🎉 ¡Cita confirmada con ${appt.artista}! Te esperamos el ${new Date(booking.fecha).toLocaleDateString('es-ES')} a las ${booking.hora}` }
+  booking = { servicio: '', artista: '', fecha: '', hora: '', precio: 0 }
+  wizardStep = 1
+  currentTab = 'dashboard'
+  render()
+}
+
+// ═══════════════════════════════════════════════════════
+// WALLET
+// ═══════════════════════════════════════════════════════
+function renderWallet(db, user, wallet, appointments) {
+  const txs = db.transactions.filter(t => {
+    const w = db.wallets.find(w => w.id === t.walletId)
+    return w?.userId === user.id
+  }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 20)
+
+  return `
+    <div class="animate">
+      <!-- Balance cards -->
+      <div class="stat-grid" style="margin-bottom:1.5rem">
+        <div class="glass-card" style="padding:1.5rem;text-align:center;border:1px solid rgba(212,175,55,0.3)">
+          <div style="font-size:0.7rem;color:var(--gray-lt);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.5rem">Saldo Disponible</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--gold);letter-spacing:2px">$${(wallet.saldo||0).toFixed(2)}</div>
+        </div>
+        <div class="glass-card" style="padding:1.5rem;text-align:center">
+          <div style="font-size:0.7rem;color:var(--gray-lt);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.5rem">Saldo Congelado</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--royal-lt);letter-spacing:2px">$${(wallet.saldoCongelado||0).toFixed(2)}</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="grid-2" style="margin-bottom:1.5rem">
+        <button class="btn btn-gold" style="width:100%;padding:1.2rem" onclick="openModal('cargar')">
+          💰 Cargar Saldo
+        </button>
+        <button class="btn btn-outline" style="width:100%;padding:1.2rem" onclick="openModal('regalar')">
+          🎁 Regalar Saldo
+        </button>
+      </div>
+
+      <!-- Terms alert -->
+      <div class="alert alert-gold" style="margin-bottom:1.5rem">
+        ⚠️ <strong>Importante:</strong> El saldo <strong>no es reembolsable en efectivo</strong>. Válido solo para servicios en Exclusive Session.
+        <a href="#" onclick="event.preventDefault();showTerms=true;render()" style="color:var(--gold);text-decoration:underline;margin-left:0.5rem">Ver términos</a>
+      </div>
+
+      <!-- Transactions -->
+      <div class="glass-card section-card">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px;margin-bottom:1rem">Historial de Transacciones</div>
+        ${txs.length === 0 ? '<div style="color:var(--gray-lt);text-align:center;padding:1rem">Sin transacciones aún</div>' : ''}
+        ${txs.map(t => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <div>
+              <div style="font-size:0.85rem;color:var(--cream)">${t.descripcion}</div>
+              <div style="font-size:0.72rem;color:var(--gray-lt)">${new Date(t.createdAt).toLocaleDateString('es-ES',{day:'numeric',month:'short'})}</div>
+            </div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:${t.monto>0?'#2ecc71':'#e74c3c'};letter-spacing:1px">
+              ${t.monto>0?'+':''}$${t.monto.toFixed(2)}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `
+}
+
+// ═══════════════════════════════════════════════════════
+// REFERIDOS
+// ═══════════════════════════════════════════════════════
+function renderReferidos(db, user, referrals, refCode) {
+  const totalCalif = referrals.filter(r => r.estado === 'calificado').length
+  const pct = Math.min(100, (totalCalif / 10) * 100)
+  return `
+    <div class="animate">
+      <div class="glass-card section-card" style="text-align:center;margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(0,87,217,0.05),rgba(212,175,55,0.05))">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:var(--gold);letter-spacing:3px">$250</div>
+        <div style="color:var(--gray-lt);margin-bottom:1.5rem">Gana $250 en saldo al calificar 10 amigos</div>
+        <div class="grid-2" style="max-width:400px;margin:0 auto 1.5rem">
+          <div style="padding:1.25rem;border-radius:14px;background:var(--glass-bg);border:1px solid var(--glass-border)">
+            <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--gray-lt)">Registrados</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--cream)">${referrals.length}</div>
+          </div>
+          <div style="padding:1.25rem;border-radius:14px;background:var(--glass-bg);border:1px solid rgba(212,175,55,0.2)">
+            <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--gray-lt)">Calificados</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--gold)">${totalCalif}</div>
+          </div>
+        </div>
+        <div class="progress-wrap" style="max-width:400px;margin:0 auto 0.5rem"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:0.78rem;color:var(--gray-lt)">${totalCalif} de 10 calificados</div>
+      </div>
+
+      <div class="referral-code-box animate">
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--gray-lt)">Tu Código de Referido</div>
+        <div class="referral-big-code animate-count">${refCode?.codigo || 'N/A'}</div>
+        <button class="btn btn-gold" onclick="navigator.clipboard.writeText('${refCode?.codigo||''}');msg={type:'success',text:'Código copiado!'};render()">
+          📋 Copiar
+        </button>
+        <div style="margin-top:0.75rem;font-size:0.78rem;color:var(--gray-lt)">Compártelo con tus amigos</div>
+      </div>
+
+      <div class="glass-card section-card" style="margin-top:1.5rem">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px;margin-bottom:1rem">📋 Reglas del Programa</div>
+        <div style="font-size:0.82rem;color:var(--gray-lt);line-height:2">
+          • Solo cuentan amigos que gasten <strong style="color:var(--cream)">$150+</strong> en el local<br>
+          • El gasto se valida <strong style="color:var(--cream)">30 días después</strong> de la cita<br>
+          • Tienes <strong style="color:var(--cream)">6 meses</strong> para calificar los 10<br>
+          • El bono $250 se acredita <strong style="color:var(--cream)">automáticamente</strong> en tu billetera
+        </div>
+      </div>
+
+      ${referrals.length > 0 ? `
+        <div class="glass-card section-card" style="margin-top:1.5rem">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px;margin-bottom:1rem">Amigos Referidos</div>
+          ${referrals.map(r => {
+            const ref = findUserById(r.referidoId)
+            const pct2 = Math.min(100, (r.gastoAcumulado / 150) * 100)
+            return `
+              <div style="padding:1rem;border-radius:12px;background:var(--glass-bg);border:1px solid var(--glass-border);margin-bottom:0.75rem">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                  <div style="font-weight:600;color:var(--cream)">${ref?.nombre||'Usuario'}</div>
+                  <span class="badge badge-${r.estado==='calificado'?'green':r.estado==='fraude_detectado'?'wine':'gold'}">${r.estado}</span>
+                </div>
+                <div class="progress-wrap"><div class="progress-fill ${r.estado==='calificado'?'green':''}" style="width:${pct2}%"></div></div>
+                <div style="font-size:0.72rem;color:var(--gray-lt);margin-top:0.3rem">$${r.gastoAcumulado.toFixed(2)} / $150 gastado</div>
+              </div>
+            `
+          }).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `
+}
+
+// ═══════════════════════════════════════════════════════
+// CUOTAS
+// ═══════════════════════════════════════════════════════
+function renderCuotas(db, user, wallet, installments) {
+  return `
+    <div class="animate">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+        <div class="section-title">📊 Cuotas — Layaway</div>
+        <button class="btn btn-gold btn-sm" onclick="openModal('cuota')">+ Nueva Cuota</button>
+      </div>
+
+      ${installments.length === 0 ? `
+        <div class="glass-card section-card" style="text-align:center">
+          <div style="font-size:3rem;margin-bottom:1rem">🎨</div>
+          <div style="color:var(--gray-lt);margin-bottom:1.5rem">Sin cuotas activas. ¡Abre una para tu próximo tatuaje!</div>
+          <button class="btn btn-gold" onclick="openModal('cuota')">Crear primera cuota</button>
+        </div>
+      ` : installments.map(c => {
+        const pct = Math.min(100, (c.montoAbonado / c.montoObjetivo) * 100)
+        return `
+          <div class="glass-card section-card" style="margin-bottom:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
+              <div>
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px">${c.nombreTatuaje}</div>
+                <div style="font-size:0.78rem;color:var(--gray-lt)">Meta: $${c.montoObjetivo} · ${c.semanas} semanas</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:${pct>=100?'#2ecc71':'var(--gold)'}">$${c.montoAbonado.toFixed(2)}</div>
+                <div style="font-size:0.72rem;color:var(--gray-lt)">de $${c.montoObjetivo}</div>
+              </div>
+            </div>
+            <div class="progress-wrap" style="margin-bottom:1rem">
+              <div class="progress-fill ${pct>=100?'green':''}" style="width:${pct}%"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem">
+              <span style="font-size:0.8rem;color:${pct>=100?'#2ecc71':'var(--gray-lt)'}">
+                ${pct>=100 ? '✅ ¡Completado! Agenda tu cita' : `$${(c.montoObjetivo-c.montoAbonado).toFixed(2)} restante`}
+              </span>
+              ${!c.completada ? `
+                <button class="btn btn-sm btn-gold" onclick="handleAbonar('${c.id}',${c.montoObjetivo},${c.montoAbonado})">Abonar</button>
+              ` : ''}
+            </div>
+          </div>
+        `
+      }).join('')}
+    </div>
+  `
+}
+
+function handleAbonar(id, objetivo, abonado) {
+  const monto = parseFloat(prompt('¿Cuánto quieres abonar?'))
+  if (!monto || monto <= 0) return
+  const db = initDB()
+  const user = getSession()
+  const wallet = db.wallets.find(w => w.userId === user.id)
+  if (wallet.saldo < monto) { msg = { type: 'error', text: 'Saldo insuficiente' }; render(); return }
+  wallet.saldo -= monto
+  wallet.saldoCongelado += monto
+  const cuota = db.installments.find(i => i.id === id)
+  cuota.montoAbonado += monto
+  const done = cuota.montoAbonado >= cuota.montoObjetivo
+  if (done) { cuota.completada = true; cuota.estado = 'completada' }
+  db.transactions.push({ id: genId(), walletId: wallet.id, tipo: 'abono_cuota', monto: -monto, descripcion: `Abono: "${cuota.nombreTatuaje}"`, createdAt: new Date().toISOString() })
+  saveDB(db)
+  if (done) { confetti(); msg = { type: 'success', text: '🎉 ¡Cuota completada! Puedes agendar tu cita' } }
+  else msg = { type: 'success', text: `Abono de $${monto} realizado. Progreso: $${cuota.montoAbonado.toFixed(2)}` }
+  render()
+}
+
+// ═══════════════════════════════════════════════════════
+// GALERIA
+// ═══════════════════════════════════════════════════════
+let galleryTab = 'tattoo'
+function renderGaleria() {
+  const imgUrl = WEB_URL
+  const counts = { tattoo: 5, barber: 5, manicure: 5 }
+  const labels = { tattoo: 'Tattoo', barber: 'Barbería', manicure: 'Manicure' }
+
+  return `
+    <div class="animate">
+      <div class="section-title">🖼️ Galería</div>
+      <div class="section-sub">Nuestros trabajos</div>
+      <div class="tab-bar" style="margin-bottom:1.5rem">
+        ${['tattoo','barber','manicure'].map(t => `
+          <button class="tab-btn ${galleryTab===t?'active':''}" onclick="galleryTab='${t}';render()">${labels[t]}</button>
+        `).join('')}
+      </div>
+      <div class="glass-card section-card">
+        <div class="gallery-grid">
+          ${Array.from({length: counts[galleryTab]}, (_, i) => {
+            const num = galleryTab === 'tattoo' ? (i + 7) : galleryTab === 'barber' ? (i + 6) : (i + 1)
+            const prefix = galleryTab === 'tattoo' ? 'tattoo' : galleryTab === 'barber' ? 'barber' : (['tattoo','barber','manicure'][i%3])
+            const imgNum = galleryTab === 'manicure' ? (i < 6 ? i+1 : i < 11 ? i-5 : i-10) : num
+            return `<div class="gallery-item" onclick="window.open('${imgUrl}','_blank')">
+              <div style="width:100%;aspect-ratio:1;background:var(--surface);display:flex;align-items:center;justify-content:center;border-radius:12px;border:1px solid var(--glass-border)">
+                <div style="text-align:center">
+                  <div style="font-size:2rem;margin-bottom:0.3rem">${galleryTab==='tattoo'?'🎨':galleryTab==='barber'?'💈':'💅'}</div>
+                  <div style="font-size:0.65rem;color:var(--gold)">#${i+1}</div>
+                </div>
+              </div>
+              <div class="gallery-item-num">#${i+1}</div>
+            </div>`
+          }).join('')}
+        </div>
+        <div class="alert alert-info" style="margin-top:1rem">💡 Fotos courtesy of <a href="${imgUrl}" target="_blank" style="color:var(--royal-lt)">exclusive-session.com</a></div>
+      </div>
+    </div>
+  `
+}
+
+// ═══════════════════════════════════════════════════════
+// GIFT CARDS
+// ═══════════════════════════════════════════════════════
+function renderGiftCards(db, user, wallet) {
+  const gcAmounts = [25, 50, 75, 100, 150, 200]
+  return `
+    <div class="animate">
+      <div class="section-title">🎁 Gift Cards</div>
+      <div class="section-sub">Compra saldo VIP o regálalo a alguien especial</div>
+
+      <!-- Buy gift card -->
+      <div class="glass-card section-card" style="margin-bottom:1.5rem">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--cream);letter-spacing:2px;margin-bottom:1rem">💳 Comprar Gift Card</div>
+        <div class="input-group"><label>Monto (USD)</label></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:1rem">
+          ${gcAmounts.map(a => `
+            <button class="btn ${false?'btn-gold':'btn-outline'} btn-sm" onclick="document.getElementById('gc-amount').value=${a};document.querySelectorAll('.gc-amount-btn').forEach(b=>b.classList.remove('btn-gold'));this.classList.add('btn-gold');this.classList.remove('btn-outline')" style="border-color:rgba(212,175,55,0.3)" class="gc-amount-btn btn-outline btn-sm">$${a}</button>
+          `).join('')}
+        </div>
+        <div class="input-group"><label>Monto personalizado</label><input class="input" id="gc-amount" type="number" step="5" min="10" placeholder="Ej: 50"></div>
+        <div class="input-group"><label>Nombre del destinatario</label><input class="input" id="gc-to-name" placeholder="Para quién es"></div>
+        <div class="input-group"><label>Email del destinatario</label><input class="input" id="gc-to-email" type="email" placeholder="email@ejemplo.com"></div>
+        <div class="alert alert-gold" style="font-size:0.78rem">✨ Si pagas con saldo de tu billetera, el destinatario recibe <strong>10% extra</strong>!</div>
+        <button class="btn btn-gold" style="width:100%;margin-top:0.5rem" onclick="handleBuyGC()" ${wallet.saldo<=0?'disabled title="Necesitas saldo"':''}>
+          🎁 Comprar con Saldo ($${wallet.saldo.toFixed(2)} disponible)
+        </button>
+        <button class="btn btn-royal" style="width:100%;margin-top:0.5rem" onclick="openModal('gc-stripe')">
+          💳 Comprar con Tarjeta
+        </button>
+      </div>
+
+      <!-- Preview -->
+      <div class="gc-preview">
+        <div class="gc-brand">EXCLUSIVE SESSION</div>
+        <div class="gc-amount">$${document.getElementById('gc-amount')?.value || 'XX'}</div>
+        <div class="gc-to">Para: <span id="gc-preview-name">Tu amigo</span></div>
+        <div style="font-size:0.7rem;color:var(--gray-lt);margin-top:0.5rem">Gift Card Electrónica — Válida en Exclusive Session</div>
+      </div>
+
+      <!-- Gift cards received -->
+      ${db.giftCards.filter(gc => gc.receptorEmail === user.email || gc.compradorId === user.id).length > 0 ? `
+        <div class="glass-card section-card" style="margin-top:1.5rem">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--cream);letter-spacing:2px;margin-bottom:1rem">🎴 Mis Gift Cards</div>
+          ${db.giftCards.map(gc => `
+            <div style="padding:1rem;border-radius:12px;background:var(--glass-bg);border:1px solid rgba(212,175,55,0.2);margin-bottom:0.75rem">
+              <div style="display:flex;justify-content:space-between">
+                <div>
+                  <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--gold)">$${gc.monto}</div>
+                  <div style="font-size:0.72rem;color:var(--gray-lt)">Para: ${gc.receptorNombre}</div>
+                  <div style="font-size:0.72rem;color:var(--gray-lt)">Código: <strong style="color:var(--cream)">${gc.codigo}</strong></div>
+                </div>
+                <span class="badge badge-${gc.estado==='canjeada'?'plata':'green'}">${gc.estado}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `
+}
+
+function handleBuyGC() {
+  const amount = parseFloat(document.getElementById('gc-amount')?.value || '0')
+  const toName = document.getElementById('gc-to-name')?.value
+  const toEmail = document.getElementById('gc-to-email')?.value
+  if (!amount || amount <= 0 || !toName || !toEmail) { msg = { type: 'error', text: 'Completa todos los campos' }; render(); return }
+  const db = initDB()
+  const user = getSession()
+  const wallet = db.wallets.find(w => w.userId === user.id)
+  if (wallet.saldo < amount) { msg = { type: 'error', text: 'Saldo insuficiente' }; render(); return }
+  wallet.saldo -= amount
+  const finalAmount = amount * 1.1
+  db.giftCards.push({ id: genId(), compradorId: user.id, receptorEmail: toEmail, receptorNombre: toName, monto: finalAmount, montoBruto: amount, diseno: 'default', estado: 'activa', pagadaConSaldo: true, codigo: 'GC-' + genCode(), createdAt: new Date().toISOString() })
+  db.transactions.push({ id: genId(), walletId: wallet.id, tipo: 'giftcard', monto: -amount, descripcion: `Gift card de $${finalAmount.toFixed(2)} para ${toName}`, createdAt: new Date().toISOString() })
+  saveDB(db)
+  confetti()
+  msg = { type: 'success', text: `🎉 Gift Card de $${finalAmount.toFixed(2)} enviada a ${toName}! (+10% bonus)` }
+  showModal = null
+  render()
+}
+
+// ═══════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════
+function renderTermsModal() {
+  return `
+    <div class="modal-overlay" onclick="closeModal()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-title">Términos y Condiciones</div>
+        <div style="font-size:0.82rem;line-height:2;color:#bbb;max-height:350px;overflow-y:auto">
+          <p><strong>1. Saldo no reembolsable:</strong> El saldo de tu billetera es exclusivamente válido para servicios y productos de Exclusive Session Tattoo & Barbershop. No es reembolsable en efectivo.</p>
+          <br><p><strong>2. Programa de Referidos:</strong> 6 meses para calificar 10 amigos. El gasto se valida 30 días después de la cita. Reembolso = contador retrocede.</p>
+          <br><p><strong>3. Cuotas (Layaway):</strong> El saldo abonado se "congela" hasta completar 100%.</p>
+          <br><p><strong>4. Gift Cards:</strong> Si compras con saldo de tu billetera, el destinatario recibe 10% extra. No canjeables por efectivo.</p>
+          <br><p><strong>5. Membresías:</strong> Bronce (0-3 visitas, 5% off), Plata (4-8 visitas, 10% off + prioridad), Oro (+8 visitas, 15% off + cancelación gratis 2h antes).</p>
+        </div>
+        <div class="modal-actions"><button class="btn btn-gold" onclick="aceptarTerms()">Aceptar</button></div>
+      </div>
+    </div>
+  `
+}
+
+function aceptarTerms() {
+  const db = initDB()
+  const user = getSession()
+  const u = db.users.find(u => u.id === user.id)
+  u.termsAccepted = true
+  saveDB(db)
+  setSession(u)
+  showTerms = false
+  render()
+}
+
+function renderCustomModal() {
+  if (showModal === 'cargar') return `
+    <div class="modal-overlay" onclick="closeModal()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-title">💰 Cargar Saldo</div>
+        <form onsubmit="handleCargar(event)">
+          <div class="input-group"><label>Monto (USD)</label><input class="input" id="mc-monto" type="number" step="1" min="10" placeholder="Ej: 100" required></div>
+          <div class="alert alert-info" style="font-size:0.78rem">Integración Stripe próximamente. Demo: saldo acreditado instantáneamente.</div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+            <button type="submit" class="btn btn-gold">Cargar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `
+
+  if (showModal === 'regalar') return `
+    <div class="modal-overlay" onclick="closeModal()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-title">🎁 Regalar Saldo</div>
+        <form onsubmit="handleRegalar(event)">
+          <div class="input-group"><label>Email del destinatario</label><input class="input" id="mr-email" type="email" placeholder="amigo@email.com" required></div>
+          <div class="input-group"><label>Monto (USD)</label><input class="input" id="mr-monto" type="number" step="1" min="5" placeholder="Ej: 25" required></div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+            <button type="submit" class="btn btn-gold">Enviar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `
+
+  if (showModal === 'cuota') return `
+    <div class="modal-overlay" onclick="closeModal()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-title">🎨 Nueva Cuota — Layaway</div>
+        <form onsubmit="handleNuevaCuota(event)">
+          <div class="input-group"><label>Nombre del tatuaje</label><input class="input" id="mc-nombre" placeholder="Ej: Dorsal dragón medieval" required></div>
+          <div class="input-group"><label>Presupuesto total (USD)</label><input class="input" id="mc-total" type="number" step="10" min="100" placeholder="Ej: 600" required></div>
+          <div class="input-group"><label>Semanas</label><input class="input" id="mc-semanas" type="number" min="1" max="52" placeholder="Ej: 12" required></div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+            <button type="submit" class="btn btn-gold">Crear</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `
+
+  if (showModal === 'gc-stripe') return `
+    <div class="modal-overlay" onclick="closeModal()">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-title">💳 Gift Card — Pago con Tarjeta</div>
+        <div class="alert alert-info">Integración Stripe próximamente. Por ahora usa la opción "Comprar con Saldo".</div>
+        <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal()">Cerrar</button></div>
+      </div>
+    </div>
+  `
+
+  return ''
+}
+
+function handleCargar(e) {
+  e.preventDefault()
+  const monto = parseFloat(document.getElementById('mc-monto').value)
+  if (!monto || monto <= 0) return
+  const db = initDB()
+  const user = getSession()
+  const wallet = db.wallets.find(w => w.userId === user.id)
+  wallet.saldo += monto
+  db.transactions.push({ id: genId(), walletId: wallet.id, tipo: 'carga', monto, descripcion: 'Carga de saldo', createdAt: new Date().toISOString() })
+  saveDB(db)
+  confetti()
+  msg = { type: 'success', text: `💰 $${monto} acreditados a tu billetera!` }
+  showModal = null
+  render()
+}
+
+function handleRegalar(e) {
+  e.preventDefault()
+  const email = document.getElementById('mr-email').value
+  const monto = parseFloat(document.getElementById('mr-monto').value)
+  if (!monto || monto <= 0 || !email) return
+  const db = initDB()
+  const user = getSession()
+  const wallet = db.wallets.find(w => w.userId === user.id)
+  if (wallet.saldo < monto) { msg = { type: 'error', text: 'Saldo insuficiente' }; render(); return }
+  const dest = db.users.find(u => u.email === email)
+  if (!dest) { msg = { type: 'error', text: 'Usuario no encontrado' }; render(); return }
+  wallet.saldo -= monto
+  const destWallet = db.wallets.find(w => w.userId === dest.id)
+  destWallet.saldo += monto
+  db.transactions.push({ id: genId(), walletId: wallet.id, tipo: 'regalo_enviado', monto: -monto, descripcion: `Regalo para ${dest.nombre}`, createdAt: new Date().toISOString() })
+  db.transactions.push({ id: genId(), walletId: destWallet.id, tipo: 'regalo_recibido', monto, descripcion: `Regalo de ${user.nombre}`, createdAt: new Date().toISOString() })
+  saveDB(db)
+  msg = { type: 'success', text: `🎁 $${monto} enviados a ${dest.nombre}!` }
+  showModal = null
+  render()
+}
+
+function handleNuevaCuota(e) {
+  e.preventDefault()
+  const nombre = document.getElementById('mc-nombre').value
+  const monto = parseFloat(document.getElementById('mc-total').value)
+  const semanas = parseInt(document.getElementById('mc-semanas').value)
+  const db = initDB()
+  const user = getSession()
+  db.installments.push({ id: genId(), userId: user.id, nombreTatuaje: nombre, montoObjetivo: monto, montoAbonado: 0, semanas, estado: 'activa', completada: false, createdAt: new Date().toISOString() })
+  saveDB(db)
+  msg = { type: 'success', text: '📊 Cuota creada! Abona para empezar.' }
+  showModal = null
+  render()
+}
+
+// ═══════════════════════════════════════════════════════
+// ADMIN PANEL
+// ═══════════════════════════════════════════════════════
+let adminError = ''
+let secondPassRequired = false
+let pendingAdminAction = null
+let secondPassVal = ''
+
+function renderAdmin(root) {
+  if (adminAuthStep === 1) {
+    root.innerHTML = `
+      <div class="login-screen animate">
+        <div class="login-logo-wrap">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--gold);letter-spacing:5px">🛡️ ADMIN ACCESS</div>
+          <div style="color:var(--gray-lt);margin-top:0.3rem">Exclusive Session — Panel de Control</div>
+        </div>
+        <div class="login-box">
+          <div class="glass-card" style="padding:2.5rem;border:2px solid #c0392b">
+            ${adminError ? `<div class="alert alert-error">${adminError}</div>` : ''}
+            <form onsubmit="event.preventDefault();adminStep1()">
+              <div class="input-group"><label>🔐 Contraseña de acceso</label><input class="input" id="ap1" type="password" placeholder="••••••••" required autofocus></div>
+              <button type="submit" class="btn btn-danger" style="width:100%">Verificar</button>
+            </form>
+          </div>
+          <div style="text-align:center;margin-top:1rem"><a href="#" onclick="event.preventDefault();clearSession();render()" style="color:var(--gray-lt);font-size:0.8rem">← Volver a Members Area</a></div>
+        </div>
+      </div>
+    `
+    return
+  }
+  if (adminAuthStep === 2) {
+    root.innerHTML = `
+      <div class="login-screen animate">
+        <div class="login-logo-wrap">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#e67e22;letter-spacing:4px">⚠️ DOBLE VERIFICACIÓN</div>
+          <div style="color:var(--gray-lt);margin-top:0.3rem;font-size:0.85rem">Acceso restringido — segunda contraseña requerida</div>
+        </div>
+        <div class="login-box">
+          <div class="glass-card" style="padding:2.5rem;border:2px solid #e67e22">
+            ${adminError ? `<div class="alert alert-error">${adminError}</div>` : ''}
+            <form onsubmit="event.preventDefault();adminStep2()">
+              <div class="input-group"><label>🔑 Segunda contraseña</label><input class="input" id="ap2" type="password" placeholder="••••••••" required autofocus></div>
+              <button type="submit" class="btn btn-gold" style="width:100%">Acceder al Panel</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    `
+    return
+  }
+
+  // Admin panel
+  const db = initDB()
+  const stats = {
+    total: db.users.length, activos: db.users.filter(u => u.activo).length,
+    totalSaldo: db.wallets.reduce((s, w) => s + w.saldo, 0),
+    appointments: db.appointments.length, bookings: db.bookings.length,
+    giftCards: db.giftCards.length, transactions: db.transactions.length
+  }
+
+  root.innerHTML = `
+    <div class="admin-header">
+      <div class="admin-logo">🛡️ ADMIN — Exclusive Session</div>
+      <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap">
+        <span style="font-size:0.78rem;color:var(--gray-lt)">Modo: Gandalf</span>
+        <button class="btn btn-outline btn-sm" onclick="setSession(null);adminAuthStep=1;render()">Members Area</button>
+        <button class="btn btn-outline btn-sm" onclick="clearSession();render()" style="color:#e74c3c">Logout</button>
+      </div>
+    </div>
+
+    <div class="page-body">
+      ${msg ? `<div class="alert alert-${msg.type}" style="margin-bottom:1.5rem">${msg.text}</div>` : ''}
+
+      ${secondPassRequired ? `
+        <div class="modal-overlay">
+          <div class="modal" style="border:2px solid #c0392b">
+            <div class="modal-title">⚠️ Confirmar Acción Sensible</div>
+            <p style="color:#ccc;margin-bottom:1.5rem;font-size:0.88rem">Esta acción requiere la segunda contraseña (Mordor777)</p>
+            <div class="input-group"><label>🔑 Segunda contraseña</label><input class="input" id="sp-val" type="password" placeholder="••••••••" autofocus value="${secondPassVal}"></div>
+            <div class="modal-actions">
+              <button class="btn btn-outline" onclick="secondPassRequired=false;pendingAdminAction=null;secondPassVal='';render()">Cancelar</button>
+              <button class="btn btn-danger" onclick="adminConfirmSecond()">Confirmar</button>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="tab-bar">
+        ${['stats','usuarios','reservas','transacciones','nuevo'].map(t => `
+          <button class="tab-btn ${adminTab===t?'active':''}" onclick="adminTab='${t}';render()">
+            ${['📊 Estadísticas','👥 Usuarios','📅 Reservas','💳 Transacciones','➕ Crear'][(['stats','usuarios','reservas','transacciones','nuevo'].indexOf(t))]}
+          </button>
+        `).join('')}
+      </div>
+
+      ${adminTab === 'stats' ? `
+        <div class="stat-grid">
+          <div class="glass-card" style="padding:1.5rem;text-align:center"><div class="stat-val" style="color:var(--cream)">${stats.total}</div><div class="stat-lbl">Total Usuarios</div></div>
+          <div class="glass-card" style="padding:1.5rem;text-align:center"><div class="stat-val" style="color:#2ecc71">${stats.activos}</div><div class="stat-lbl">Activos</div></div>
+          <div class="glass-card" style="padding:1.5rem;text-align:center"><div class="stat-val" style="color:var(--gold)">$${stats.totalSaldo.toFixed(2)}</div><div class="stat-lbl">Saldo Total</div></div>
+          <div class="glass-card" style="padding:1.5rem;text-align:center"><div class="stat-val" style="color:var(--royal-lt)">${stats.appointments}</div><div class="stat-lbl">Citas</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="glass-card section-card">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px;margin-bottom:1rem">Niveles de Membresía</div>
+            <div class="grid-3">
+              ${['bronce','plata','oro'].map(n => {
+                const count = db.users.filter(u => u.nivel === n).length
+                const colors = { bronce: '#cd7f32', plata: '#c0c0c0', oro: '#D4AF37' }
+                return `<div class="level-card level-${n}" style="background:${colors[n]}10;border:1px solid ${colors[n]}40">
+                  <div class="level-name" style="color:${colors[n]}">${n.toUpperCase()}</div>
+                  <div class="level-visits">${count} usuario${count!==1?'s':''}</div>
+                </div>`
+              }).join('')}
+            </div>
+          </div>
+          <div class="glass-card section-card">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px;margin-bottom:1rem">Actividad Reciente</div>
+            ${db.transactions.slice(-5).reverse().map(t => {
+              const w = db.wallets.find(w => w.id === t.walletId)
+              const u = w ? db.users.find(u => u.id === w.userId) : null
+              return `<div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.82rem">
+                <span style="color:var(--gray-lt)">${u?.nombre||'—'}: ${t.descripcion}</span>
+                <span style="color:${t.monto>0?'#2ecc71':'#e74c3c'}">${t.monto>0?'+':''}$${t.monto.toFixed(2)}</span>
+              </div>`
+            }).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${adminTab === 'usuarios' ? `
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>Nombre</th><th>Email</th><th>Nivel</th><th>Visitas</th><th>Saldo</th><th>Activo</th><th>Acciones</th></tr></thead>
+            <tbody>
+              ${db.users.map(u => {
+                const w = db.wallets.find(w => w.userId === u.id)
+                return `<tr>
+                  <td style="font-weight:600;color:var(--cream)">${u.nombre}</td>
+                  <td style="color:var(--gray-lt)">${u.email}</td>
+                  <td><span class="badge badge-${u.nivel}">${u.nivel}</span></td>
+                  <td>${u.visitas}</td>
+                  <td style="color:var(--gold)">$${(w?.saldo||0).toFixed(2)}</td>
+                  <td><span style="color:${u.activo?'#2ecc71':'#e74c3c'};font-size:1.1rem">${u.activo?'●':'○'}</span></td>
+                  <td>
+                    <div style="display:flex;gap:0.3rem;flex-wrap:wrap">
+                      <button class="btn btn-sm btn-outline" onclick="adminAgregarSaldo('${u.id}')" title="Agregar saldo">+$</button>
+                      <button class="btn btn-sm btn-outline" onclick="adminQuitarSaldo('${u.id}')" title="Quitar saldo">-$</button>
+                      <button class="btn btn-sm btn-outline" onclick="adminRegalarGC('${u.id}')" title="Regalar GC">🎁</button>
+                      <button class="btn btn-sm ${u.activo?'btn-danger':'btn-gold'}" onclick="adminToggleActivo('${u.id}',${u.activo})" style="font-size:0.7rem">${u.activo?'Off':'On'}</button>
+                      <button class="btn btn-sm btn-danger" onclick="adminDeleteUser('${u.id}')" style="font-size:0.7rem">Del</button>
+                    </div>
+                  </td>
+                </tr>`
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      ` : ''}
+
+      ${adminTab === 'reservas' ? `
+        <div class="glass-card section-card">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px;margin-bottom:1.5rem">📅 Reservas Recientes</div>
+          ${db.bookings.length === 0 ? '<div style="color:var(--gray-lt);text-align:center;padding:2rem">Sin reservas aún</div>' : ''}
+          ${db.bookings.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha)).map(b => {
+            const u = db.users.find(x => x.id === b.userId)
+            return `<div class="appt-card">
+              <div class="appt-info">
+                <div class="appt-svc">${b.servicio.toUpperCase()}</div>
+                <div class="appt-details">${new Date(b.fecha).toLocaleDateString('es-ES',{weekday:'short',month:'short',day:'numeric'})} · ${b.hora}</div>
+                <div class="appt-artist">con ${b.artista} · ${u?.nombre||'—'}</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--gold)">$${b.precio}</div>
+                <span class="badge badge-${b.estado==='confirmada'?'green':b.estado==='completada'?'oro':'gold'}">${b.estado}</span>
+              </div>
+            </div>`
+          }).join('')}
+        </div>
+      ` : ''}
+
+      ${adminTab === 'transacciones' ? `
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>Fecha</th><th>Usuario</th><th>Tipo</th><th>Monto</th><th>Descripción</th></tr></thead>
+            <tbody>
+              ${db.transactions.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,100).map(t => {
+                const w = db.wallets.find(x => x.id === t.walletId)
+                const u = w ? db.users.find(x => x.id === w.userId) : null
+                const tc = t.tipo==='carga'||t.tipo==='referral_bonus'||t.tipo==='regalo_recibido'?'#2ecc71':t.tipo==='refund'||t.tipo==='regalo_enviado'||t.tipo==='abono_cuota'||t.tipo==='descuento_cita'?'#e74c3c':'var(--royal-lt)'
+                return `<tr>
+                  <td style="color:var(--gray-lt);white-space:nowrap">${new Date(t.createdAt).toLocaleDateString('es-ES')}</td>
+                  <td>${u?.nombre||'—'}</td>
+                  <td><span style="font-size:0.72rem;padding:0.2rem 0.5rem;border-radius:6px;background:${tc}20;color:${tc}">${t.tipo}</span></td>
+                  <td style="color:${tc};font-weight:700">${t.monto>0?'+':''}$${t.monto.toFixed(2)}</td>
+                  <td style="color:var(--gray-lt);font-size:0.8rem">${t.descripcion}</td>
+                </tr>`
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      ` : ''}
+
+      ${adminTab === 'nuevo' ? `
+        <div class="grid-2">
+          <div class="glass-card section-card">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px;margin-bottom:1.5rem">👤 Crear Usuario</div>
+            <form onsubmit="adminCrearUsuario(event)">
+              <div class="input-group"><label>Nombre</label><input class="input" id="a-nombre" required></div>
+              <div class="input-group"><label>Email</label><input class="input" id="a-email" type="email" required></div>
+              <div class="input-group"><label>Teléfono</label><input class="input" id="a-tel" required></div>
+              <div class="input-group"><label>Contraseña</label><input class="input" id="a-pass" type="password" required></div>
+              <div class="input-group"><label>Saldo inicial (opcional)</label><input class="input" id="a-saldo" type="number" step="1" min="0" placeholder="0"></div>
+              <button type="submit" class="btn btn-gold" style="width:100%">Crear Usuario</button>
+            </form>
+          </div>
+          <div class="glass-card section-card">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--cream);letter-spacing:2px;margin-bottom:1.5rem">📅 Crear Reserva</div>
+            <form onsubmit="adminCrearReserva(event)">
+              <div class="input-group"><label>Email del usuario</label><input class="input" id="a-r-email" placeholder="usuario@email.com" required></div>
+              <div class="input-group"><label>Servicio</label>
+                <select class="input" id="a-r-svc">
+                  <option value="tattoo">Tattoo</option><option value="barber">Barbería</option><option value="manicure">Manicure</option>
+                </select>
+              </div>
+              <div class="input-group"><label>Artista</label>
+                <select class="input" id="a-r-artista">
+                  <option value="Nelson">Nelson Tattoo</option><option value="James">James Barber</option><option value="JC">JC Barber</option><option value="Sharith">Sharith Nails</option><option value="Keren">Keren Nails</option>
+                </select>
+              </div>
+              <div class="input-group"><label>Precio (USD)</label><input class="input" id="a-r-precio" type="number" step="1" required></div>
+              <div class="input-group"><label>Fecha</label><input class="input" id="a-r-fecha" type="datetime-local" required></div>
+              <div class="input-group"><label>Pagado con saldo</label>
+                <select class="input" id="a-r-pagado">
+                  <option value="false">No</option><option value="true">Sí</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-gold" style="width:100%">Crear Reserva + Notificar</button>
+            </form>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `
+}
+
+function adminStep1() {
+  const p = document.getElementById('ap1').value
+  if (p === ADMIN_PASS) { adminAuthStep = 2; adminError = ''; render() }
+  else { adminError = 'Contraseña incorrecta'; render() }
+}
+function adminStep2() {
+  const p = document.getElementById('ap2').value
+  if (p === ADMIN_SECOND_PASS) { adminAuthStep = 3; adminError = ''; render() }
+  else { adminError = 'Contraseña incorrecta'; render() }
+}
+function adminConfirmSecond() {
+  const v = document.getElementById('sp-val')?.value
+  if (v !== ADMIN_SECOND_PASS) { msg = { type: 'error', text: 'Segunda contraseña incorrecta' }; secondPassRequired = false; render(); return }
+  const db = initDB()
+  if (pendingAdminAction.type === 'toggle') {
+    const u = db.users.find(u => u.id === pendingAdminAction.id)
+    u.activo = !u.activo
+    msg = { type: 'success', text: `Usuario ${u.activo?'activado':'desactivado'}` }
+  } else if (pendingAdminAction.type === 'delete') {
+    db.users = db.users.filter(u => u.id !== pendingAdminAction.id)
+    msg = { type: 'success', text: 'Usuario eliminado permanentemente' }
+  }
+  saveDB(db)
+  secondPassRequired = false; pendingAdminAction = null; secondPassVal = ''
+  render()
+}
+function adminToggleActivo(id, current) {
+  if (!current) {
+    const db = initDB(); const u = db.users.find(u => u.id === id)
+    u.activo = true; saveDB(db)
+    msg = { type: 'success', text: 'Usuario activado' }; render()
+  } else {
+    pendingAdminAction = { type: 'toggle', id }; secondPassRequired = true; render()
+  }
+}
+function adminDeleteUser(id) {
+  pendingAdminAction = { type: 'delete', id }; secondPassRequired = true; render()
+}
+function adminAgregarSaldo(id) {
+  const monto = parseFloat(prompt('¿Cuánto saldo agregas?'))
+  if (!monto || monto <= 0) return
+  const db = initDB(); const wallet = db.wallets.find(w => w.userId === id)
+  if (wallet) { wallet.saldo += monto; db.transactions.push({ id: genId(), walletId: wallet.id, tipo: 'carga', monto, descripcion: 'Admin: saldo agregado manualmente', createdAt: new Date().toISOString() }); saveDB(db) }
+  msg = { type: 'success', text: `$${monto} agregados a la billetera` }; confetti(); render()
+}
+function adminQuitarSaldo(id) {
+  const monto = parseFloat(prompt('¿Cuánto saldo quitas?'))
+  if (!monto || monto <= 0) return
+  const db = initDB(); const wallet = db.wallets.find(w => w.userId === id)
+  if (wallet) {
+    const real = Math.min(monto, wallet.saldo)
+    wallet.saldo -= real
+    db.transactions.push({ id: genId(), walletId: wallet.id, tipo: 'refund', monto: -real, descripcion: 'Admin: saldo removido', createdAt: new Date().toISOString() })
+    saveDB(db)
+    msg = { type: 'success', text: `$${real.toFixed(2)} removidos de la billetera` }
+  }
+  render()
+}
+function adminRegalarGC(id) {
+  const monto = parseFloat(prompt('¿Cuánto Gift Card le regalas?'))
+  if (!monto || monto <= 0) return
+  const db = initDB(); const user = db.users.find(u => u.id === id)
+  if (!user) return
+  const wallet = db.wallets.find(w => w.userId === id)
+  const finalMonto = monto * 1.1
+  if (wallet) { wallet.saldo += finalMonto }
+  db.giftCards.push({ id: genId(), compradorId: 'ADMIN', receptorEmail: user.email, receptorNombre: user.nombre, monto: finalMonto, montoBruto: monto, diseno: 'admin', estado: 'activa', pagadaConSaldo: false, codigo: 'GC-' + genCode(), createdAt: new Date().toISOString() })
+  db.transactions.push({ id: genId(), walletId: wallet?.id, tipo: 'carga', monto: finalMonto, descripcion: `Admin: Gift Card regalada de $${finalMonto.toFixed(2)}`, createdAt: new Date().toISOString() })
+  saveDB(db)
+  msg = { type: 'success', text: `🎁 Gift Card de $${finalMonto.toFixed(2)} regalada a ${user.nombre}!` }
+  confetti('#0057D9', '#e91e8c'); render()
+}
+function adminCrearUsuario(e) {
+  e.preventDefault()
+  const db = initDB()
+  const nombre = document.getElementById('a-nombre').value
+  const email = document.getElementById('a-email').value
+  const telefono = document.getElementById('a-tel').value
+  const pass = document.getElementById('a-pass').value
+  const saldoInicial = parseFloat(document.getElementById('a-saldo')?.value || '0')
+  if (db.users.find(u => u.email === email)) { msg = { type: 'error', text: 'Email ya existe' }; render(); return }
+  const uid = genId(); const wid = genId(); const cid = genId()
+  db.users.push({ id: uid, email, telefono, nombre, password: hashPass(pass), rol: 'user', nivel: 'bronce', visitas: 0, score: 0, activo: true, termsAccepted: false, createdAt: new Date().toISOString() })
+  db.wallets.push({ id: wid, userId: uid, saldo: saldoInicial, saldoCongelado: 0, createdAt: new Date().toISOString() })
+  db.referralCodes.push({ id: cid, userId: uid, codigo: genCode(), createdAt: new Date().toISOString() })
+  db.streaks.push({ id: genId(), userId: uid, estrellas: 0, streakActiva: true, createdAt: new Date().toISOString() })
+  if (saldoInicial > 0) { db.transactions.push({ id: genId(), walletId: wid, tipo: 'carga', monto: saldoInicial, descripcion: 'Saldo inicial (admin)', createdAt: new Date().toISOString() }) }
+  saveDB(db)
+  confetti(); msg = { type: 'success', text: `👤 Usuario "${nombre}" creado!` }; render()
+}
+function adminCrearReserva(e) {
+  e.preventDefault()
+  const db = initDB()
+  const email = document.getElementById('a-r-email').value
+  const svc = document.getElementById('a-r-svc').value
+  const artista = document.getElementById('a-r-artista').value
+  const precio = parseFloat(document.getElementById('a-r-precio').value)
+  const fecha = document.getElementById('a-r-fecha').value
+  const pagado = document.getElementById('a-r-pagado').value === 'true'
+  const user = db.users.find(u => u.email === email)
+  if (!user) { msg = { type: 'error', text: 'Usuario no encontrado' }; render(); return }
+  const wallet = db.wallets.find(w => w.userId === user.id)
+  if (pagado && wallet) {
+    wallet.saldo -= precio
+    db.transactions.push({ id: genId(), walletId: wallet.id, tipo: 'descuento_cita', monto: -precio, descripcion: `Pago reserva (admin): ${svc} con ${artista}`, createdAt: new Date().toISOString() })
+  }
+  const bid = genId()
+  const appt = { id: bid, userId: user.id, servicio: svc, artista, precio, fecha, hora: fecha.split('T')[1]?.substring(0,5)||'', estado: 'confirmada', pagadaConSaldo: pagado, createdAt: new Date().toISOString() }
+  db.appointments.push(appt)
+  db.bookings.push(appt)
+  saveDB(db)
+  confetti()
+  const waMsg = encodeURIComponent(`¡Hola ${user.nombre}! Tu cita de ${svc} con ${artista} ha sido reservada para el ${new Date(fecha).toLocaleDateString('es-ES',{weekday:'long',month:'long',day:'numeric'})} a las ${appt.hora}. ¡Te esperamos en Exclusive Session!`)
+  msg = { type: 'success', text: `📅 Reserva creada para ${user.nombre}!` }
+  render()
+  setTimeout(() => { window.open(`https://${ADMIN_WA}?text=${waMsg}`, '_blank') }, 1000)
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+render()
+</script>
+</body>
+</html>

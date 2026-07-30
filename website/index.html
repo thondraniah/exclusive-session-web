@@ -1,0 +1,910 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exclusive Session Tattoo & Barbershop | Bronx NY</title>
+  <meta name="description" content="Exclusive Session Tattoo & Barbershop — Tattoos, Barbería y Manicure en el Bronx, NY.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000000;
+      --gold: #D4AF37;
+      --gold-lt: #F5D77A;
+      --gold-dark: #9A7B2E;
+      --gold-glass: rgba(212,175,55,0.15);
+      --wine: #6B0F1A;
+      --royal-blue: #0057D9;
+      --royal-lt: #1E90FF;
+      --white: #ffffff;
+      --cream: #F0EAD6;
+      --gray: #666666;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── BUTTONS ──────────────────────────────────── */
+    .btn-glass {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      border-radius: 50px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .btn-gold {
+      background: linear-gradient(135deg,#9A7B2E 0%,#D4AF37 30%,#F5D77A 50%,#D4AF37 70%,#9A7B2E 100%);
+      color: #000;
+      box-shadow: 0 0 20px rgba(212,175,55,0.4), 0 4px 15px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+    .btn-gold::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.6s;
+    }
+    .btn-gold:hover::before { left: 150%; }
+    .btn-gold:hover { box-shadow: 0 0 35px rgba(212,175,55,0.6), 0 6px 20px rgba(0,0,0,0.5); transform: translateY(-2px); }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid rgba(212,175,55,0.5);
+      color: var(--gold-lt);
+    }
+    .btn-outline:hover { background: var(--gold-glass); border-color: var(--gold); transform: translateY(-2px); }
+
+    .btn-blue {
+      background: linear-gradient(135deg, #001A4D 0%, #003399 30%, #0057D9 50%, #1E90FF 70%, #003399 100%);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(0,87,217,0.4);
+    }
+    .btn-blue:hover { box-shadow: 0 0 35px rgba(0,87,217,0.6); transform: translateY(-2px); }
+
+    /* ── NAVBAR ───────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 2rem;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(212,175,55,0.15);
+      transition: box-shadow 0.3s;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .nav-logo img {
+      height: 30px;
+      width: auto;
+    }
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+      align-items: center;
+    }
+    .nav-links a {
+      color: rgba(240,234,214,0.75);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--gold-lt); }
+
+    /* Hamburger */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { width: 25px; height: 2px; background: var(--gold); border-radius: 2px; }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.97);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--gold-lt); text-decoration: none; font-size: 1.4rem; font-family: 'Bebas Neue', sans-serif; letter-spacing: 3px; }
+
+    /* ── HERO ────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      background: #000000;
+      padding: 6rem 2rem 4rem;
+    }
+    .hero::before { display: none; }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-shop-img {
+      max-width: 700px;
+      width: 92vw;
+      margin: 0 auto 1.5rem;
+      display: block;
+      border-radius: 12px;
+      border: 1px solid rgba(212,175,55,0.2);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.6);
+    }
+    .hero-logo-big {
+      max-width: 400px;
+      width: 90vw;
+      margin: 0 auto 2rem;
+      display: block;
+    }
+    .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
+    .hero-locations { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; color: rgba(240,234,214,0.5); font-size: 0.8rem; }
+    .hero-loc { display: flex; align-items: center; gap: 0.4rem; }
+
+    /* Gold divider */
+    .gold-divider {
+      border: none;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0;
+    }
+    .wine-divider {
+      border: none;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--wine), transparent);
+      margin: 0;
+    }
+
+    /* ── SECTION STYLES ───────────────────────────── */
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      text-align: center;
+      color: var(--gold);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .divider-line {
+      width: 60px;
+      height: 2px;
+      background: var(--gold);
+      margin: 0 auto 1rem;
+    }
+    .section-title {
+      text-align: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      letter-spacing: 3px;
+      color: var(--cream);
+      margin-bottom: 0.75rem;
+    }
+    .section-sub { text-align: center; color: rgba(240,234,214,0.55); font-size: 0.9rem; max-width: 500px; margin: 0 auto 3rem; }
+
+    /* ── SERVICES ─────────────────────────────────── */
+    .services { background: var(--black); padding: 5rem 0; }
+    .services-tattoo-hero {
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+    }
+    .services-tattoo-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* ── GALLERY ─────────────────────────────────── */
+    .gallery { background: #000; padding: 5rem 0; }
+    .gallery-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .gallery-tab {
+      padding: 0.75rem 2.2rem;
+      border-radius: 50px;
+      border: 2px solid rgba(212,175,55,0.4);
+      background: rgba(212,175,55,0.05);
+      color: var(--gold-lt);
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      backdrop-filter: blur(12px);
+      font-family: 'Inter', sans-serif;
+    }
+    .gallery-tab:hover { background: rgba(212,175,55,0.15); border-color: var(--gold); box-shadow: 0 0 18px rgba(212,175,55,0.3); transform: translateY(-2px); }
+    .gallery-tab.active {
+      background: linear-gradient(135deg,#9A7B2E 0%,#D4AF37 30%,#F5D77A 50%,#D4AF37 70%,#9A7B2E 100%);
+      color: #000;
+      border-color: var(--gold);
+      box-shadow: 0 0 25px rgba(212,175,55,0.5), 0 4px 15px rgba(0,0,0,0.4);
+    }
+    .gallery-container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+    .gallery-panel { display: none; }
+    .gallery-panel.active { display: grid; }
+    .gallery-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid rgba(212,175,55,0.2);
+      background: #111;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      transform-style: preserve-3d;
+    }
+    .gallery-item:hover { border-color: var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.4), 0 10px 30px rgba(0,0,0,0.5); }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
+    .gallery-item:hover img { transform: scale(1.08); }
+    .gallery-num {
+      position: absolute;
+      bottom: 6px; right: 8px;
+      background: rgba(0,0,0,0.8);
+      color: var(--gold-lt);
+      font-size: 0.6rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 20px;
+      border: 1px solid rgba(212,175,55,0.5);
+      z-index: 2;
+      pointer-events: none;
+      backdrop-filter: blur(6px);
+    }
+    @media (max-width: 900px) { .gallery-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 600px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; } }
+
+    /* ── LIGHTBOX ────────────────────────────────── */
+    #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 10000; align-items: center; justify-content: center; flex-direction: column; }
+    #lightbox.open { display: flex; }
+    #lightbox-img { max-width: 88vw; max-height: 78vh; object-fit: contain; border-radius: 12px; border: 3px solid var(--gold); box-shadow: 0 0 60px rgba(212,175,55,0.2); }
+    #lightbox-close { position: absolute; top: 1.5rem; right: 2rem; background: linear-gradient(135deg,#9A7B2E,#D4AF37); color: #000; border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 1.5rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; box-shadow: 0 0 20px rgba(212,175,55,0.5); transition: all 0.2s; }
+    #lightbox-close:hover { background: linear-gradient(135deg,#D4AF37,#F5D77A); transform: scale(1.1); }
+    #lightbox-nav { display: flex; gap: 1rem; margin-top: 1.2rem; }
+    #lightbox-nav button { background: rgba(212,175,55,0.1); border: 2px solid rgba(212,175,55,0.5); color: var(--gold-lt); border-radius: 50px; padding: 0.6rem 2rem; cursor: pointer; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; font-size: 0.8rem; transition: all 0.25s; font-family: 'Inter', sans-serif; }
+    #lightbox-nav button:hover { background: linear-gradient(135deg,#9A7B2E,#D4AF37); color: #000; border-color: var(--gold); }
+    #lightbox-counter { color: var(--gold-lt); font-size: 0.8rem; margin-top: 0.75rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.7; }
+
+    /* ── CTA BLUE ─────────────────────────────────── */
+    .cta-blue { background: linear-gradient(135deg,#001A4D 0%,#003399 30%,#0057D9 50%,#1E90FF 70%,#003399 100%); padding: 5rem 2rem; text-align: center; }
+    .cta-blue h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 3px; color: #fff; margin-bottom: 1rem; }
+    .cta-blue p { color: rgba(255,255,255,0.7); font-size: 1rem; margin-bottom: 2rem; }
+
+    /* ── TEAM ────────────────────────────────────── */
+    .team { background: var(--black); padding: 5rem 0; }
+    .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.5rem; }
+    .team-card { padding: 2rem 1rem; text-align: center; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.15); backdrop-filter: blur(10px); }
+    .team-avatar { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 1rem; border: 3px solid var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.3); overflow: hidden; background: #111; }
+    .team-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .team-card h4 { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; color: var(--cream); margin-bottom: 0.3rem; }
+    .team-role { color: var(--gold); font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .team-area { color: rgba(240,234,214,0.4); font-size: 0.75rem; margin-top: 0.3rem; }
+
+    /* ── LOCATIONS ───────────────────────────────── */
+    .locations { background: #050505; padding: 5rem 0; }
+    .location-hero-img-wrap {
+      max-width: 800px;
+      margin: 0 auto 2.5rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(212,175,55,0.15);
+    }
+    .location-hero-img { width: 100%; height: 320px; object-fit: cover; display: block; }
+    .locations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .location-card { padding: 2.5rem; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.15); backdrop-filter: blur(10px); text-align: center; }
+    .location-card h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 2px; color: var(--cream); margin-bottom: 0.5rem; }
+    .location-card p { color: rgba(240,234,214,0.5); font-size: 0.85rem; line-height: 1.6; }
+
+    /* ── SHOP ────────────────────────────────────── */
+    .shop { background: var(--black); padding: 5rem 0; }
+    .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2rem; }
+    .shop-card { padding: 2rem; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.15); text-align: center; }
+    .shop-card h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px; color: var(--cream); margin-bottom: 0.5rem; }
+    .shop-card p { color: rgba(240,234,214,0.5); font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    /* Product cards */
+    .shop-category-label { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 3px; color: var(--gold); text-align: center; margin-bottom: 1.5rem; text-transform: uppercase; }
+    .shop-product {
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(212,175,55,0.15);
+    }
+    .shop-product-img-wrap {
+      width: 100%;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      background: #0a0a0a;
+    }
+    .shop-product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .shop-product:hover .shop-product-img { transform: scale(1.05); }
+    .shop-product-info { padding: 1.5rem; }
+    .shop-product-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px; color: var(--cream); margin-bottom: 0.6rem; }
+    .shop-product-desc { color: rgba(240,234,214,0.5); font-size: 0.82rem; line-height: 1.6; margin-bottom: 1rem; }
+    .shop-product-price { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--gold); letter-spacing: 2px; margin-bottom: 1rem; }
+
+    /* Booking CTA at bottom of shop */
+    .shop-booking-cta {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 2.5rem;
+      border-radius: 16px;
+      background: rgba(212,175,55,0.05);
+      border: 1px solid rgba(212,175,55,0.2);
+    }
+    .shop-booking-cta p { color: rgba(240,234,214,0.6); margin-bottom: 1.2rem; font-size: 0.9rem; }
+
+    /* ── CONTACT ──────────────────────────────────── */
+    .contact { background: #050505; padding: 5rem 0; }
+    .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; max-width: 800px; margin: 0 auto; }
+    .contact-card { padding: 2rem; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.15); text-align: center; }
+    .contact-card h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 2px; color: var(--gold-lt); margin-bottom: 0.5rem; }
+    .contact-card p, .contact-card a { color: rgba(240,234,214,0.6); font-size: 0.85rem; text-decoration: none; line-height: 1.8; }
+    .contact-card a:hover { color: var(--gold-lt); }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    footer { background: #000; border-top: 1px solid rgba(212,175,55,0.2); padding: 3rem 2rem 2rem; }
+    .footer-content { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 2rem; margin-bottom: 2rem; }
+    .footer-col h4 { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; color: var(--gold); margin-bottom: 1rem; }
+    .footer-col p, .footer-col a { color: rgba(240,234,214,0.5); font-size: 0.8rem; text-decoration: none; display: block; margin-bottom: 0.5rem; line-height: 1.6; }
+    .footer-col a:hover { color: var(--gold-lt); }
+    .footer-bottom { max-width: 1100px; margin: 0 auto; border-top: 1px solid rgba(212,175,55,0.1); padding-top: 1.5rem; text-align: center; }
+    .footer-bottom p { color: rgba(240,234,214,0.35); font-size: 0.75rem; }
+
+    /* ── WHATSAPP FLOAT ───────────────────────────── */
+    .whatsapp-float { position: fixed; bottom: 2rem; right: 2rem; z-index: 999; background: #25D366; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.4); transition: transform 0.3s; }
+    .whatsapp-float:hover { transform: scale(1.1); }
+
+    /* ── FADE IN ANIMATION ───────────────────────── */
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE NAV ───────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
+    @media (max-width: 480px) {
+      nav { padding: 0.7rem 1rem; }
+      .hero-logo-big { max-width: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="#inicio" class="nav-logo"><img src="logo.jpg" alt="Exclusive Session"></a>
+    <ul class="nav-links">
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#galeria">Galería</a></li>
+      <li><a href="#equipo">Equipo</a></li>
+      <li><a href="#ubicaciones">Ubicación</a></li>
+      <li><a href="#tienda">Tienda</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <div class="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#servicios" onclick="this.parentElement.classList.remove('open')">Servicios</a>
+    <a href="#galeria" onclick="this.parentElement.classList.remove('open')">Galería</a>
+    <a href="#equipo" onclick="this.parentElement.classList.remove('open')">Equipo</a>
+    <a href="#ubicaciones" onclick="this.parentElement.classList.remove('open')">Ubicación</a>
+    <a href="#tienda" onclick="this.parentElement.classList.remove('open')">Tienda</a>
+    <a href="#contacto" onclick="this.parentElement.classList.remove('open')">Contacto</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-content">
+      <img src="cabecera1.jpg" alt="Exclusive Session Tattoo Shop" class="hero-shop-img">
+      <img src="logo.jpg" alt="Exclusive Session" class="hero-logo-big">
+      <div class="hero-btns">
+        <a href="https://buy.stripe.com/3cI7sL58EaWe4Uy1yGcwg00" target="_blank" class="btn-glass btn-gold">💰 Agendar — $50 Deposit</a>
+        <a href="https://wa.me/16464882233" target="_blank" class="btn-glass btn-outline">💬 WhatsApp</a>
+      </div>
+      <div class="hero-locations">
+        <div class="hero-loc">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          895 Fairmount Pl, Bronx NY
+        </div>
+        <div class="hero-loc">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          1901 Southern Blvd, Bronx NY
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="gold-divider">
+
+  <!-- SERVICES -->
+  <section class="services" id="servicios">
+    <div class="container">
+      <div class="section-label">Lo que hacemos</div>
+      <div class="divider-line"></div>
+      <h2 class="section-title">Nuestros Servicios</h2>
+      <p class="section-sub">Tres especialidades, un solo lugar.</p>
+      <div class="services-tattoo-hero"><img src="service-tattoo.jpg" alt="Tattoo"></div>
+      <div class="services-tattoo-hero"><img src="service-barber.jpg" alt="Barbería"></div>
+      <div class="services-tattoo-hero"><img src="service-manicure.jpg" alt="Manicure"></div>
+    </div>
+  </section>
+
+  <hr class="wine-divider">
+
+  <!-- GALLERY -->
+  <section class="gallery" id="galeria">
+    <div class="gallery-container">
+      <div class="section-label">Nuestros trabajos</div>
+      <div class="divider-line"></div>
+      <h2 class="section-title">Galería</h2>
+      <p class="section-sub">Tattoo · Barbería · Manicure</p>
+
+      <div class="gallery-tabs">
+        <button class="gallery-tab active" id="tab-tattoo" onclick="switchGallery('tattoo')">Tattoo</button>
+        <button class="gallery-tab" id="tab-barber" onclick="switchGallery('barber')">Barbería</button>
+        <button class="gallery-tab" id="tab-manicure" onclick="switchGallery('manicure')">Manicure</button>
+      </div>
+
+      <!-- TATTOO PANEL -->
+      <div class="gallery-grid gallery-panel active" id="panel-tattoo">
+        <!-- Generated by script below -->
+      </div>
+
+      <!-- BARBER PANEL -->
+      <div class="gallery-grid gallery-panel" id="panel-barber">
+        <!-- Generated by script below -->
+      </div>
+
+      <!-- MANICURE PANEL -->
+      <div class="gallery-grid gallery-panel" id="panel-manicure">
+        <!-- Generated by script below -->
+      </div>
+    </div>
+  </section>
+
+  <hr class="gold-divider">
+
+  <!-- CTA BLUE -->
+  <section class="cta-blue">
+    <h2>Síguenos en Redes</h2>
+    <p>Ve nuestro trabajo en tiempo real</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="https://www.instagram.com/exclusivesessioninc" target="_blank" class="btn-glass btn-gold">📸 Instagram</a>
+      <a href="https://www.tiktok.com/@nelsonemendoza808" target="_blank" class="btn-glass btn-blue">🎵 TikTok</a>
+      <a href="https://www.facebook.com/share/1DuzEY3bZU/" target="_blank" class="btn-glass btn-outline">👍 Facebook</a>
+    </div>
+  </section>
+
+  <hr class="wine-divider">
+
+  <!-- TEAM -->
+  <section class="team" id="equipo">
+    <div class="container">
+      <div class="section-label">Conoce al equipo</div>
+      <div class="divider-line"></div>
+      <h2 class="section-title">Nuestro Equipo</h2>
+      <p class="section-sub">Profesionales apasionados que hacen de Exclusive Session el lugar que es.</p>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar"><img src="nelson.jpg" alt="Nelson Mendoza"></div>
+          <h4>Nelson Mendoza</h4>
+          <div class="team-role">Nelson Tattoo</div>
+          <div class="team-area">Tatuador Maître & Co-owner</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar"><img src="edwin.jpg" alt="Edwin Mendoza"></div>
+          <h4>Edwin Mendoza</h4>
+          <div class="team-role">CEO</div>
+          <div class="team-area">Administración</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar"><img src="james.jpg" alt="James Barber"></div>
+          <h4>James Barber</h4>
+          <div class="team-role">James Barber</div>
+          <div class="team-area">Barbería</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar"><img src="jc.jpg" alt="JC Barber"></div>
+          <h4>JC Barber</h4>
+          <div class="team-role">JC Barber</div>
+          <div class="team-area">Barbería</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar"><img src="sharith.jpg" alt="Sharith"></div>
+          <h4>Sharith</h4>
+          <div class="team-role">The Princess</div>
+          <div class="team-area">Manicure & Pedicure</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar"><img src="keren_new.jpg" alt="Keren"></div>
+          <h4>Keren</h4>
+          <div class="team-role">The Queen</div>
+          <div class="team-area">Manicure & Pedicure</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="gold-divider">
+
+  <!-- LOCATIONS -->
+  <section class="locations" id="ubicaciones">
+    <div class="container">
+      <div class="section-label">Visítanos</div>
+      <div class="divider-line"></div>
+      <h2 class="section-title">Nuestras Ubicaciones</h2>
+      <div class="location-hero-img-wrap">
+        <img src="cabecera1.jpg" alt="Exclusive Session Tattoo Shop — Exterior" class="location-hero-img">
+      </div>
+      <div class="locations-grid">
+        <div class="location-card">
+          <h3>📍 Fairmount Place</h3>
+          <p>895 Fairmount Pl<br>Bronx, NY</p>
+          <a href="https://maps.app.goo.gl/bm8EghuMoCjApDYH7" target="_blank" class="btn-glass btn-outline" style="margin-top:1rem;display:inline-flex;font-size:0.75rem;">Ver en Maps</a>
+        </div>
+        <div class="location-card">
+          <h3>📍 Southern Blvd</h3>
+          <p>1901 Southern Blvd<br>Bronx, NY</p>
+          <a href="https://maps.app.goo.gl/bm8EghuMoCjApDYH7" target="_blank" class="btn-glass btn-outline" style="margin-top:1rem;display:inline-flex;font-size:0.75rem;">Ver en Maps</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="wine-divider">
+
+  <!-- SHOP -->
+  <section class="shop" id="tienda">
+    <div class="container">
+      <div class="section-label">Merch · Aftercare · Anestésicos</div>
+      <div class="divider-line"></div>
+      <h2 class="section-title">Tienda</h2>
+
+      <div class="shop-category-label">🧴 Aftercare Kit — Cuidado del Tatuaje</div>
+      <div class="shop-grid">
+        <div class="shop-product">
+          <div class="shop-product-img-wrap">
+            <img src="shop-product2.jpg" alt="Exclusive Session Aftercare Kit" class="shop-product-img">
+          </div>
+          <div class="shop-product-info">
+            <div class="shop-product-name">Aftercare Kit Completo</div>
+            <div class="shop-product-desc">Kit premium de cuidado para tatuajes: Antibacterial Foaming Soap (150ml), Healing Tattoo Balm (50g), Daily Tattoo Lotion (100ml), toalla y bolsa con logo Exclusive Session.</div>
+            <div class="shop-product-price">Coming soon</div>
+            <a href="https://wa.me/16464882233?text=Hola%2C%20me%20interesa%20el%20Aftercare%20Kit%20Completo" target="_blank" class="btn-glass btn-gold">Reservar por WhatsApp</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="shop-category-label" style="margin-top:3rem;">👕 Merch — Camiseta & Gorra</div>
+      <div class="shop-grid">
+        <div class="shop-product">
+          <div class="shop-product-img-wrap">
+            <img src="shop-product3.jpg" alt="Camiseta Exclusive Session" class="shop-product-img">
+          </div>
+          <div class="shop-product-info">
+            <div class="shop-product-name">Camiseta — Logo Exclusive Session</div>
+            <div class="shop-product-desc">Camiseta negra premium con logo Exclusive Session bordado en dorado/bronce. Diseño frontal y trasero. Tallas disponibles: S - 2XL.</div>
+            <div class="shop-product-price">Coming soon</div>
+            <a href="https://wa.me/16464882233?text=Hola%2C%20me%20interesa%20la%20camiseta%20Exclusive%20Session" target="_blank" class="btn-glass btn-gold">Reservar por WhatsApp</a>
+          </div>
+        </div>
+        <div class="shop-product">
+          <div class="shop-product-img-wrap">
+            <img src="shop-product4.jpg" alt="Gorra Exclusive Session" class="shop-product-img">
+          </div>
+          <div class="shop-product-info">
+            <div class="shop-product-name">Gorra — Logo Exclusive Session</div>
+            <div class="shop-product-desc">Gorra negra snapback con logo Exclusive Session bordado al frente y lateral. Estilo premium, cierre snapback ajustable.</div>
+            <div class="shop-product-price">Coming soon</div>
+            <a href="https://wa.me/16464882233?text=Hola%2C%20me%20interesa%20la%20gorra%20Exclusive%20Session" target="_blank" class="btn-glass btn-gold">Reservar por WhatsApp</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="shop-category-label" style="margin-top:3rem;">💉 Anestésicos Tópicos</div>
+      <div class="shop-grid">
+        <div class="shop-product">
+          <div class="shop-product-img-wrap">
+            <img src="shop-product5.jpg" alt="Anestésicos Exclusive Session" class="shop-product-img">
+          </div>
+          <div class="shop-product-info">
+            <div class="shop-product-name">Anestésicos Tópicos — Spray & Crema</div>
+            <div class="shop-product-desc">Set de 2 anestésicos tópicos marca Exclusive Session: Topical Anesthetic Spray (Lidocaine HCL 5% — 30ml) + Topical Anesthetic Cream (Lidocaine 5% + Prilocaine 5% — 50g). Fórmula avanzada para aplicación de tatuajes.</div>
+            <div class="shop-product-price">Coming soon</div>
+            <a href="https://wa.me/16464882233?text=Hola%2C%20me%20interesan%20los%20anest%C3%A9sicos%20t%C3%B3picos%20Exclusive%20Session" target="_blank" class="btn-glass btn-gold">Reservar por WhatsApp</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="shop-booking-cta">
+        <p>¿Preguntas sobre precios o disponibilidad? Escríbenos directamente.</p>
+        <a href="https://wa.me/16464882233" target="_blank" class="btn-glass btn-outline">💬 WhatsApp — +1 (646) 488-2233</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="gold-divider">
+
+  <!-- CONTACT -->
+  <section class="contact" id="contacto">
+    <div class="container">
+      <div class="section-label">Contáctanos</div>
+      <div class="divider-line"></div>
+      <h2 class="section-title">Contacto</h2>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <h3>📞 Teléfono</h3>
+          <p><a href="tel:+16464882223">+1 (646) 488-2233</a></p>
+          <p><a href="tel:+13473163496">+1 (347) 316-3496</a></p>
+        </div>
+        <div class="contact-card">
+          <h3>💬 WhatsApp</h3>
+          <p><a href="https://wa.me/16464882233" target="_blank">Escríbenos aquí</a></p>
+        </div>
+        <div class="contact-card">
+          <h3>🌐 Web</h3>
+          <p><a href="https://exclusive-session.com" target="_blank">exclusive-session.com</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-col">
+        <h4>Exclusive Session</h4>
+        <p>Tattoo · Barbería · Manicure<br>Bronx, NY</p>
+      </div>
+      <div class="footer-col">
+        <h4>Teléfono</h4>
+        <a href="tel:+16464882223">+1 (646) 488-2233</a>
+        <a href="tel:+13473163496">+1 (347) 316-3496</a>
+        <a href="https://wa.me/16464882233" target="_blank">WhatsApp</a>
+      </div>
+      <div class="footer-col">
+        <h4>Síguenos</h4>
+        <a href="https://www.instagram.com/exclusivesessioninc" target="_blank">Instagram</a>
+        <a href="https://www.tiktok.com/@nelsonemendoza808" target="_blank">TikTok</a>
+        <a href="https://www.facebook.com/share/1DuzEY3bZU/" target="_blank">Facebook</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 <span>Exclusive Session Tattoo & Barbershop</span>. Todos los derechos reservados.</p>
+      <p>Bronx, NY · <a href="https://exclusive-session.com" target="_blank" style="color:var(--gold);text-decoration:none;">exclusive-session.com</a></p>
+    </div>
+  </footer>
+
+  <!-- WHATSAPP FLOAT -->
+  <a href="https://wa.me/16464882233" target="_blank" class="whatsapp-float">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox">
+    <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img id="lightbox-img" src="" alt="">
+    <div id="lightbox-nav">
+      <button onclick="lbPrev()">◄ Anterior</button>
+      <button onclick="lbNext()">Siguiente ►</button>
+    </div>
+    <div id="lightbox-counter"></div>
+  </div>
+
+  <script>
+    // ── GALLERY DATA ──────────────────────────────
+    const GALLERY = {
+      tattoo: { total: 132, start: 7, prefix: 'tattoo' },
+      barber: { total: 39, start: 6, prefix: 'barber' },
+      manicure: { total: 17, start: 0, prefix: 'manicure' }
+    };
+
+    // Manicure uses mixed files
+    const MANICURE_FILES = [
+      'tattoo1.jpg','tattoo2.jpg','tattoo3.jpg','tattoo4.jpg','tattoo5.jpg','tattoo6.jpg',
+      'barber1.jpg','barber2.jpg','barber3.jpg','barber4.jpg','barber5.jpg',
+      'manicure1.jpg','manicure2.jpg','manicure3.jpg','manicure4.jpg','manicure5.jpg','manicure6.jpg'
+    ];
+
+    // Build gallery panels
+    function buildGallery() {
+      // Tattoo
+      const tPanel = document.getElementById('panel-tattoo');
+      for (let i = 1; i <= 134; i++) {
+        // Skip 62 and 63 (inappropriate content)
+        if (i === 62 || i === 63) continue;
+        const fileNum = i + 6; // tattoo7.jpg to tattoo140.jpg
+        const displayNum = i > 63 ? i - 2 : (i > 61 ? i - 1 : i);
+        const div = document.createElement('div');
+        div.className = 'gallery-item';
+        div.innerHTML = `<img src="tattoo${fileNum}.jpg" alt="Tattoo"><span class="gallery-num">${displayNum}</span>`;
+        div.addEventListener('click', () => openLightbox(`tattoo${fileNum}.jpg`, 'tattoo', 132, displayNum));
+        tPanel.appendChild(div);
+      }
+
+      // Barber
+      const bPanel = document.getElementById('panel-barber');
+      for (let i = 1; i <= 39; i++) {
+        const fileNum = i + 5; // barber6.jpg to barber44.jpg
+        const div = document.createElement('div');
+        div.className = 'gallery-item';
+        div.innerHTML = `<img src="barber${fileNum}.jpg" alt="Barbería"><span class="gallery-num">${i}</span>`;
+        div.addEventListener('click', () => openLightbox(`barber${fileNum}.jpg`, 'barber', 39, i));
+        bPanel.appendChild(div);
+      }
+
+      // Manicure
+      const mPanel = document.getElementById('panel-manicure');
+      MANICURE_FILES.forEach((file, i) => {
+        const div = document.createElement('div');
+        div.className = 'gallery-item';
+        div.innerHTML = `<img src="${file}" alt="Manicure"><span class="gallery-num">${i+1}</span>`;
+        div.addEventListener('click', () => openLightbox(file, 'manicure', 17, i+1));
+        mPanel.appendChild(div);
+      });
+    }
+
+    buildGallery();
+
+    // ── SWITCH GALLERY TAB ────────────────────────
+    function switchGallery(tab) {
+      document.querySelectorAll('.gallery-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.gallery-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('panel-' + tab).classList.add('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+    }
+
+    // ── LIGHTBOX ─────────────────────────────────
+    let lbFile = '', lbTotal = 0, lbIndex = 0;
+
+    function openLightbox(file, prefix, total, index) {
+      lbFile = file; lbTotal = total; lbIndex = index;
+      document.getElementById('lightbox-img').src = file;
+      document.getElementById('lightbox-counter').textContent = lbIndex + ' / ' + lbTotal;
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function getLightboxFile(index) {
+      const tabs = { tattoo: { start: 7, prefix: 'tattoo' }, barber: { start: 6, prefix: 'barber' } };
+      // We track which gallery is active
+      return null;
+    }
+
+    // For tattoo/barber: simple increment
+    function lbNext() {
+      if (lbIndex < lbTotal) lbIndex++;
+      updateLightbox();
+    }
+    function lbPrev() {
+      if (lbIndex > 1) lbIndex--;
+      updateLightbox();
+    }
+    function updateLightbox() {
+      // Determine prefix from lbFile
+      let prefix = 'tattoo';
+      if (lbFile.startsWith('barber')) prefix = 'barber';
+      else if (lbFile.startsWith('manicure') || lbFile.startsWith('tattoo') && parseInt(lbFile.replace('tattoo','').replace('.jpg','')) <= 6) prefix = 'manicure';
+
+      let file;
+      if (prefix === 'manicure') {
+        file = MANICURE_FILES[lbIndex - 1];
+      } else {
+        const startNum = prefix === 'tattoo' ? 7 : 6;
+        file = prefix + (lbIndex + startNum - 1) + '.jpg';
+      }
+      document.getElementById('lightbox-img').src = file;
+      document.getElementById('lightbox-counter').textContent = lbIndex + ' / ' + lbTotal;
+      lbFile = file;
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (!document.getElementById('lightbox').classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') lbPrev();
+      if (e.key === 'ArrowRight') lbNext();
+    });
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this) closeLightbox();
+    });
+
+    // ── 3D TILT ─────────────────────────────────
+    document.querySelectorAll('.gallery-item').forEach(function(card) {
+      card.addEventListener('mousemove', function(e) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rx = ((y / rect.height) - 0.5) * -10;
+        const ry = ((x / rect.width) - 0.5) * 10;
+        card.style.transform = 'perspective(600px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) scale3d(1.05,1.05,1.05)';
+      });
+      card.addEventListener('mouseleave', function() {
+        card.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+      });
+    });
+
+    // ── FADE IN ───────────────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Nav shadow on scroll
+    window.addEventListener('scroll', function() {
+      const nav = document.querySelector('nav');
+      nav.style.boxShadow = window.scrollY > 10 ? '0 4px 30px rgba(0,0,0,0.7)' : 'none';
+    });
+  </script>
+</body>
+</html>

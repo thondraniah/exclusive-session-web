@@ -1,0 +1,4 @@
+members-app/node_modules/
+members-app/.next/
+members-app/out/
+*.ps1
